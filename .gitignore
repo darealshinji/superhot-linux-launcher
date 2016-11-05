@@ -1,0 +1,17 @@
+/fltk/
+/libcxx/
+/libcxx_source/
+
+/launcher
+/ressources.h 
+
+a.out
+
+*.o
+*.x86
+*.x86_64
+
+*~
+*.old
+*.bak
+
