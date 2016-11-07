@@ -331,10 +331,9 @@ int main(int argc, char **argv)
   win = new Fl_Window(400, 600, "SUPERHOT Launcher");
   win->callback(close_cb);
   {
-    Fl_Group *g         = new Fl_Group(0, 0, 400, 600);
-    Fl_PNG_Image *bg = new Fl_PNG_Image(NULL, BGIMAGE, (int) BGIMAGE_LEN);
-    Fl_Tiled_Image *wp  = new Fl_Tiled_Image(bg);
-
+    Fl_Group *g        = new Fl_Group(0, 0, 400, 600);
+    Fl_PNG_Image *bg   = new Fl_PNG_Image(NULL, BGIMAGE, (int) BGIMAGE_LEN);
+    Fl_Tiled_Image *wp = new Fl_Tiled_Image(bg);
     g->image(wp);
     g->align(FL_ALIGN_INSIDE);
     {
@@ -365,10 +364,10 @@ int main(int argc, char **argv)
         o->labelcolor(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
-     /* if (screens_avail < 2)
+        if (screens_avail == 1)
         {
           o->deactivate();
-        } */
+        }
         o->menu(monitor_items);
         o->value(val_screen); }
 
