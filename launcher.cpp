@@ -112,58 +112,75 @@ int uri_box::handle(int event)
   return ret;
 }
 
-static int resolutions[][2] = {
-  {  640,  480 },
-  {  720,  480 },
-  {  720,  576 },
-  {  800,  600 },
-  { 1024,  768 },
-  { 1152,  864 },
-  { 1280,  720 },
-  { 1280,  768 },
-  { 1280,  800 },
-  { 1280,  960 },
-  { 1280, 1024 },
-  { 1360,  768 },
-  { 1366,  768 },
-  { 1440,  900 },
-  { 1600,  900 },
-  { 1680, 1050 },
-  { 1920, 1080 },
+struct resolutionData {
+  int w;
+  int h;
+  const char *l;
+};
+
+static struct resolutionData resolutions[] = {
+  {  640,  480,   "640x480" },
+  {  720,  480,   "720x480" },
+  {  720,  576,   "720x576" },
+  {  800,  600,   "800x600" },
+  { 1024,  768,  "1024x768" },
+  { 1152,  864,  "1152x864" },
+  { 1280,  720,  "1280x720" },
+  { 1280,  768,  "1280x768" },
+  { 1280,  800,  "1280x800" },
+  { 1280,  960,  "1280x960" },
+  { 1280, 1024, "1280x1024" },
+  { 1360,  768,  "1360x768" },
+  { 1366,  768,  "1366x768" },
+  { 1440,  900,  "1440x900" },
+  { 1600,  900,  "1600x900" },
+  { 1680, 1050, "1680x1050" },
+  { 1920, 1080, "1920x1080" },
+};
+
+static const char *l10n[][2] = {
+  { "EN", "English" },
+  { "PL", "Polski" },
+  { "FR", "Fran" "\xc3\xa7" "ais" },  /* Français */
+  { "DE", "Deutsch" },
+  { "RU", "\xd0\xa0" "\xd1\x83" "\xd1\x81" "\xd1\x81" "\xd0\xba" "\xd0\xb8" "\xd0\xb9" },  /* Русский */
+  { "PT", "Portugu" "\xc3\xaa" "s do Brasil" },  /* Portuguêse do Brasil */
+  { "IT", "Italiano" },
+  { "CZ", "\xc4\x8c" "e" "\xc5\xa1" "tina" },  /* Čeština */
+  { "HU", "Magyar" },
+  { "SP", "Espa" "\xc3\xb1" "ol" }  /* Español */
 };
 
 static Fl_Menu_Item resolution_items[] = {
-  ITEM("640x480"),
-  ITEM("720x480"),
-  ITEM("720x576"),
-  ITEM("800x600"),
-  ITEM("1024x768"),
-  ITEM("1152x864"),
-  ITEM("1280x720"),
-  ITEM("1280x768"),
-  ITEM("1280x800"),
-  ITEM("1280x960"),
-  ITEM("1280x1024"),
-  ITEM("1360x768"),
-  ITEM("1366x768"),
-  ITEM("1440x900"),
-  ITEM("1600x900"),
-  ITEM("1680x1050"),
-  ITEM("1920x1080"),
+  ITEM(resolutions[0].l),
+  ITEM(resolutions[1].l),
+  ITEM(resolutions[2].l),
+  ITEM(resolutions[3].l),
+  ITEM(resolutions[4].l),
+  ITEM(resolutions[5].l),
+  ITEM(resolutions[6].l),
+  ITEM(resolutions[7].l),
+  ITEM(resolutions[8].l),
+  ITEM(resolutions[9].l),
+  ITEM(resolutions[10].l),
+  ITEM(resolutions[11].l),
+  ITEM(resolutions[12].l),
+  ITEM(resolutions[13].l),
+  ITEM(resolutions[14].l),
+  ITEM(resolutions[15].l),
+  ITEM(resolutions[16].l),
   ITEM_INIT
 };
 
 static Fl_Menu_Item language_items[] = {
-  ITEM("English"),
-  ITEM("Polski"),
-  ITEM("Fran" "\xc3\xa7" "ais"),  /* Français */
-  ITEM("Deutsch"),
-  ITEM("\xd0\xa0" "\xd1\x83" "\xd1\x81" "\xd1\x81" "\xd0\xba" "\xd0\xb8" "\xd0\xb9" ),  /* Русский */
-  ITEM("Portugu" "\xc3\xaa" "s do Brasil"),  /* Portuguêse do Brasil */
-  ITEM("Italiano"),
-  ITEM("\xc4\x8c" "e" "\xc5\xa1" "tina"), /* Čeština */
-  ITEM("Magyar"),
-  ITEM("Espa" "\xc3\xb1" "ol"),  /* Español */
+  ITEM(l10n[0][1]),
+  ITEM(l10n[1][1]),
+  ITEM(l10n[2][1]),
+  ITEM(l10n[3][1]),
+  ITEM(l10n[4][1]),
+  ITEM(l10n[5][1]),
+  ITEM(l10n[6][1]),
+  ITEM(l10n[7][1]),
   ITEM_INIT
 };
 
@@ -174,13 +191,14 @@ static std::string itostr(int i)
   return ss.str();
 }
 
-static int readconf(std::string conf, std::string conffile)
+static int readconf(std::string conf, std::string conffile, int defaultVal)
 {
   FILE *readconf;
   /* I find forking a shell and using sed+head much easier and safer */
-  std::string command = "sed -n 's/^" + conf + "=//p' " + conffile + " 2>/dev/null|head -n1|head -c6";
+  std::string command = "(sed -n 's/^" + conf + "=//p' '" + conffile +
+    "' 2>/dev/null||printf " + itostr(defaultVal) + ")|head -n1|head -c6";
   char getvar[16];
-  int val = 0;
+  int val = defaultVal;
 
   readconf = popen(command.c_str(), "r");
   int p = fscanf(readconf, "%s", getvar);
@@ -193,7 +211,7 @@ static int readconf(std::string conf, std::string conffile)
 
   if (val < 0)
   {
-    val = 0;
+    val = defaultVal;
   }
   return val;
 }
@@ -284,11 +302,11 @@ int main(int argc, char **argv)
   conffile = std::string(exe) + ".config";
 
   /* check configurations */
-  val_res       = readconf("resolution", conffile);
-  is_fullscreen = readconf("fullscreen", conffile);
-  val_lang      = readconf("language", conffile);
-  val_quality   = readconf("quality", conffile);
-  val_screen    = readconf("screen", conffile);
+  val_res       = readconf("resolution", conffile, 16);
+  is_fullscreen = readconf("fullscreen", conffile, 1);
+  val_lang      = readconf("language", conffile, 0);
+  val_quality   = readconf("quality", conffile, 0);
+  val_screen    = readconf("screen", conffile, 0);
   screens_avail = get_number_of_screens();
 
   if (val_screen > (screens_avail - 1) || val_screen < 0)
@@ -329,8 +347,6 @@ int main(int argc, char **argv)
     {
       { Fl_Choice *o = resolution_selection = new Fl_Choice(80, 146, 246, 26, "RESOLUTION");
         o->align(FL_ALIGN_TOP_LEFT);
-        o->box(FL_FLAT_BOX);
-        o->down_box(FL_FLAT_BOX);
         o->labelcolor(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
@@ -353,8 +369,6 @@ int main(int argc, char **argv)
 
       { Fl_Choice *o = screen_selection = new Fl_Choice(80, 238, 246, 26, "SELECT MONITOR");
         o->align(FL_ALIGN_TOP_LEFT);
-        o->box(FL_FLAT_BOX);
-        o->down_box(FL_FLAT_BOX);
         o->labelcolor(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
@@ -367,8 +381,6 @@ int main(int argc, char **argv)
 
       { Fl_Choice *o = language_selection = new Fl_Choice(80, 304, 246, 26, "LANGUAGE");
         o->align(FL_ALIGN_TOP_LEFT);
-        o->box(FL_FLAT_BOX);
-        o->down_box(FL_FLAT_BOX);
         o->labelcolor(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
@@ -381,11 +393,11 @@ int main(int argc, char **argv)
         o->labelcolor(FL_WHITE); }
 
       { Fl_Radio_Round_Button *o[2];
-        o[0] = new Fl_Radio_Round_Button(78, 370, 66, 26, " LOW");
+        o[0] = new Fl_Radio_Round_Button(78, 370, 70, 26, " HIGH");
         o[0]->labelcolor(FL_WHITE);
         o[0]->clear_visible_focus();
         o[0]->callback(rb_callback, 0);
-        o[1] = new Fl_Radio_Round_Button(160, 370, 70, 26, " HIGH");
+        o[1] = new Fl_Radio_Round_Button(160, 370, 66, 26, " LOW");
         o[1]->labelcolor(FL_WHITE);
         o[1]->clear_visible_focus();
         o[1]->callback(rb_callback, 1);
@@ -475,15 +487,14 @@ int main(int argc, char **argv)
        << "quality="    << itostr(val_quality)   << "\n";
     of.close();
 
-    std::string quality[] = { "LowEnd", "HighEnd" };
-    std::string l10n[] = { "EN", "PL", "FR", "DE", "RU", "PT", "IT", "CZ", "HU", "SP" };
+    std::string quality[] = { "HighEnd", "LowEnd" };
 
-    std::string command = std::string(exedir) + "/SUPERHOT." EXEEXT
+    std::string command = "'" + std::string(exedir) + "/SUPERHOT." EXEEXT + "'"
       " -adapter "           + itostr(val_screen) +
       " -screen-fullscreen " + itostr(is_fullscreen) +
-      " -screen-height "     + itostr(resolutions[val_res][1]) +
-      " -screen-width "      + itostr(resolutions[val_res][0]) +
-      " -language "          + l10n[val_lang] +
+      " -screen-width "      + itostr(resolutions[val_res].w) +
+      " -screen-height "     + itostr(resolutions[val_res].h) +
+      " -language "          + l10n[val_lang][0] +
       " -screen-quality "    + quality[val_quality];
 
     Fl::check();

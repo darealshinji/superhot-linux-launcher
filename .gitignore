@@ -3,6 +3,7 @@
 /libcxx_source/
 
 /launcher
+/launcher.config
 /resources.h
 
 a.out
