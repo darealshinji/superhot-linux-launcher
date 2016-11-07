@@ -415,7 +415,7 @@ int main(int argc, char **argv)
         o->box(FL_FLAT_BOX);
         o->down_box(FL_FLAT_BOX);
         o->labelcolor(FL_WHITE);
-        Fl_Color button_color = fl_rgb_color(134, 0, 0);
+        Fl_Color button_color = fl_rgb_color(93, 0, 0);
         o->color(button_color);
         o->down_color(button_color);
         o->clear_visible_focus();
