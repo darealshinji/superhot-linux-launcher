@@ -118,7 +118,8 @@ struct resolutionData {
   const char *l;
 };
 
-static struct resolutionData resolutions[] = {
+static const int resolutionsLength = 17;
+static struct resolutionData resolutions[resolutionsLength] = {
   {  640,  480,   "640x480" },
   {  720,  480,   "720x480" },
   {  720,  576,   "720x576" },
@@ -302,7 +303,7 @@ int main(int argc, char **argv)
   conffile = std::string(exe) + ".config";
 
   /* check configurations */
-  val_res       = readconf("resolution", conffile, 16);
+  val_res       = readconf("resolution", conffile, resolutionsLength - 1);
   is_fullscreen = readconf("fullscreen", conffile, 1);
   val_lang      = readconf("language", conffile, 0);
   val_quality   = readconf("quality", conffile, 0);
