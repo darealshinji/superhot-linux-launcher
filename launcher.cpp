@@ -176,6 +176,8 @@ static Fl_Menu_Item language_items[] = {
   ITEM(l10n[5][1]),
   ITEM(l10n[6][1]),
   ITEM(l10n[7][1]),
+  ITEM(l10n[8][1]),
+  ITEM(l10n[9][1]),
   ITEM_INIT
 };
 
