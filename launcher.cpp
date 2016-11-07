@@ -27,7 +27,6 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Choice.H>
-#include <FL/Fl_JPEG_Image.H>
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Tiled_Image.H>
@@ -63,16 +62,11 @@
 #  endif
 #endif
 
-//#define EMBEDDED_RESOURCES 0
-#ifndef EMBEDDED_RESOURCES
-#  define EMBEDDED_RESOURCES 1
-#endif
-#if (EMBEDDED_RESOURCES == 1)
-#  include "resources.h"  /* the resources are NOT MIT licensed */
-#  define BGIMAGE   launcher_jpg
-#  define ICON      icon_png
-#  define ICON_LEN  icon_png_len
-#endif
+#include "resources.h"
+#define BGIMAGE      launcher_png
+#define BGIMAGE_LEN  launcher_png_len
+#define ICON         icon_png
+#define ICON_LEN     icon_png_len
 
 //#define DEBUG 1  /* makes boxes visible */
 
@@ -328,6 +322,9 @@ int main(int argc, char **argv)
   }
   monitor_items[screens_avail] = ITEM_INIT;
 
+  Fl_PNG_Image win_icon(NULL, ICON, (int) ICON_LEN);
+  Fl_Window::default_icon(&win_icon);
+
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
   Fl::background(200, 18, 0);
 
@@ -335,13 +332,8 @@ int main(int argc, char **argv)
   win->callback(close_cb);
   {
     Fl_Group *g         = new Fl_Group(0, 0, 400, 600);
-#if EMBEDDED_RESOURCES == 1
-    Fl_JPEG_Image *jpeg = new Fl_JPEG_Image(NULL, BGIMAGE);
-#else
-    std::string bgimage = std::string(exedir) + "/launcher.jpg";
-    Fl_JPEG_Image *jpeg = new Fl_JPEG_Image(bgimage.c_str());
-#endif
-    Fl_Tiled_Image *wp  = new Fl_Tiled_Image(jpeg);
+    Fl_PNG_Image *bg = new Fl_PNG_Image(NULL, BGIMAGE, (int) BGIMAGE_LEN);
+    Fl_Tiled_Image *wp  = new Fl_Tiled_Image(bg);
 
     g->image(wp);
     g->align(FL_ALIGN_INSIDE);
@@ -458,14 +450,6 @@ int main(int argc, char **argv)
   int pos_x = (Fl::w() - win->w()) / 2;
   int pos_y = (Fl::h() - win->h()) / 2;
   win->position(pos_x, pos_y);
-
-#if EMBEDDED_RESOURCES == 1
-  Fl_PNG_Image win_icon(NULL, ICON, (int) ICON_LEN);
-#else
-  std::string icon = std::string(exedir) + "/SUPERHOT_Data/Resources/UnityPlayer.png";
-  Fl_PNG_Image win_icon(icon.c_str());
-#endif
-  Fl_Window::default_icon(&win_icon);
 
   win->end();
   win->show();

@@ -11,7 +11,7 @@ test -x libcxx/libc++-wrapper || ./build-libcxx.sh
 test -d fltk/build/usr/include || ./build-fltk.sh
 
 cd images
-xxd -i launcher.jpg > ../resources.h
+xxd -i launcher.png > ../resources.h
 xxd -i icon.png >> ../resources.h
 cd ..
 
@@ -30,7 +30,7 @@ libcxx/libc++-wrapper -std=c++11 $cflags \
   -c -o launcher.o launcher.cpp
 
 libcxx/libc++-wrapper -o launcher launcher.o binreloc.o \
-  -L./fltk/build/lib/ -lfltk_images -lfltk_jpeg -lfltk_png -lfltk_z -lfltk \
+  -L./fltk/build/lib/ -lfltk_images -lfltk_png -lfltk_z -lfltk \
   -Wl,--as-needed -Wl,--gc-sections -Wl,-z,defs -Wl,-z,relro -s \
   -lm -lX11 -lXext -lpthread -lXinerama -lXfixes -lXcursor -lXft -lXrender -lfontconfig -ldl 
 
