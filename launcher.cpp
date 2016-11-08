@@ -26,7 +26,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
-#include <FL/Fl_Choice.H>
+#include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Tiled_Image.H>
@@ -71,11 +71,6 @@
 //#define DEBUG 1  /* makes boxes visible */
 
 
-static Fl_Window *win;
-static bool checkbutton_set;
-static bool launch_game = false;
-static int val_quality;
-
 class uri_box : public Fl_Box
 {
   public:
@@ -106,14 +101,27 @@ int uri_box::handle(int event)
   return ret;
 }
 
+Fl_Window *win;
+Fl_Menu_Button *resolution_selection, *screen_selection, *language_selection;
+bool checkbutton_set;
+bool launch_game = false;
+int val_quality;
+
+std::string selection_text[3];
+enum {
+  TEXT_RES,
+  TEXT_SCREEN,
+  TEXT_LANG
+};
+
 struct resolutionData {
   int w;
   int h;
   const char *l;
 };
 
-static const int resolutionsLength = 17;
-static struct resolutionData resolutions[resolutionsLength] = {
+const int resolutionsLength = 17;
+struct resolutionData resolutions[resolutionsLength] = {
   {  640,  480,   "640x480" },
   {  720,  480,   "720x480" },
   {  720,  576,   "720x576" },
@@ -133,7 +141,7 @@ static struct resolutionData resolutions[resolutionsLength] = {
   { 1920, 1080, "1920x1080" },
 };
 
-static const char *l10n[][2] = {
+const char *l10n[][2] = {
   { "EN", "English" },
   { "PL", "Polski" },
   { "FR", "Fran" "\xc3\xa7" "ais" },  /* Français */
@@ -146,7 +154,7 @@ static const char *l10n[][2] = {
   { "SP", "Espa" "\xc3\xb1" "ol" }  /* Español */
 };
 
-static Fl_Menu_Item resolution_items[] = {
+Fl_Menu_Item resolution_items[] = {
   ITEM(resolutions[0].l),
   ITEM(resolutions[1].l),
   ITEM(resolutions[2].l),
@@ -167,7 +175,7 @@ static Fl_Menu_Item resolution_items[] = {
   ITEM_INIT
 };
 
-static Fl_Menu_Item language_items[] = {
+Fl_Menu_Item language_items[] = {
   ITEM(l10n[0][1]),
   ITEM(l10n[1][1]),
   ITEM(l10n[2][1]),
@@ -181,14 +189,14 @@ static Fl_Menu_Item language_items[] = {
   ITEM_INIT
 };
 
-static std::string itostr(int i)
+std::string itostr(int i)
 {
   std::stringstream ss;
   ss << i;
   return ss.str();
 }
 
-static int readconf(std::string conf, std::string conffile, int defaultVal)
+int readconf(std::string conf, std::string conffile, int defaultVal)
 {
   FILE *readconf;
   /* I find forking a shell and using sed+head much easier and safer */
@@ -213,7 +221,7 @@ static int readconf(std::string conf, std::string conffile, int defaultVal)
   return val;
 }
 
-static int get_number_of_screens()
+int get_number_of_screens()
 {
   Display *dp = XOpenDisplay(":0.0");
   int val = ScreenCount(dp);
@@ -248,6 +256,24 @@ static void close_cb(Fl_Widget *)
   win->hide();
 }
 
+static void resolution_selection_cb(Fl_Widget *)
+{
+  selection_text[TEXT_RES] = " " + std::string(resolution_selection->text());
+  resolution_selection->label(selection_text[TEXT_RES].c_str());
+}
+
+static void screen_selection_cb(Fl_Widget *)
+{
+  selection_text[TEXT_SCREEN] = " " + std::string(screen_selection->text());
+  screen_selection->label(selection_text[TEXT_SCREEN].c_str());
+}
+
+static void language_selection_cb(Fl_Widget *)
+{
+  selection_text[TEXT_LANG] = " " + std::string(language_selection->text());
+  language_selection->label(selection_text[TEXT_LANG].c_str());
+}
+
 static void checkbutton_cb(Fl_Widget *)
 {
   checkbutton_set = (checkbutton_set) ? false : true;
@@ -261,7 +287,6 @@ static void rb_callback(Fl_Widget *, long p)
 
 int main(int argc, char **argv)
 {
-  Fl_Choice *resolution_selection, *screen_selection, *language_selection;
   Fl_Menu_Item monitor_items[128];
   std::string monitor_entry[128];
 
@@ -330,7 +355,7 @@ int main(int argc, char **argv)
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
   Fl::background(200, 18, 0);
 
-  win = new Fl_Window(400, 600, "SUPERHOT Launcher");
+  win = new Fl_Window(400, 600, "Launch Game");
   win->callback(close_cb);
   {
     Fl_Group *g        = new Fl_Group(0, 0, 400, 600);
@@ -339,13 +364,22 @@ int main(int argc, char **argv)
     g->image(wp);
     g->align(FL_ALIGN_INSIDE);
     {
-      { Fl_Choice *o = resolution_selection = new Fl_Choice(80, 146, 246, 26, "RESOLUTION");
+      { Fl_Box *o = new Fl_Box(80, 142, 246, 26, "RESOLUTION");
         o->align(FL_ALIGN_TOP_LEFT);
-        o->labelcolor(FL_WHITE);
+        o->box(FL_NO_BOX);
+        o->labelcolor(FL_WHITE); }
+      { Fl_Menu_Button *o = resolution_selection = new Fl_Menu_Button(80, 146, 246, 26);
+        o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+        o->box(FL_THIN_DOWN_BOX);
+        o->down_box(FL_THIN_DOWN_BOX);
+        o->color(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
         o->menu(resolution_items);
-        o->value(val_res); }
+        o->value(val_res);
+        selection_text[TEXT_RES] = " " + std::string(o->text());
+        o->label(selection_text[TEXT_RES].c_str());
+        o->callback(resolution_selection_cb); }
 
       { Fl_Check_Button *o = new Fl_Check_Button(78, 176, 116, 26, " WINDOWED");
 #if (DEBUG == 1)
@@ -361,9 +395,15 @@ int main(int argc, char **argv)
         }
         o->callback(checkbutton_cb); }
 
-      { Fl_Choice *o = screen_selection = new Fl_Choice(80, 238, 246, 26, "SELECT MONITOR");
+      { Fl_Box *o = new Fl_Box(80, 234, 246, 26, "SELECT MONITOR");
         o->align(FL_ALIGN_TOP_LEFT);
-        o->labelcolor(FL_WHITE);
+        o->box(FL_NO_BOX);
+        o->labelcolor(FL_WHITE); }
+      { Fl_Menu_Button *o = screen_selection = new Fl_Menu_Button(80, 238, 246, 26);
+        o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+        o->box(FL_THIN_DOWN_BOX);
+        o->down_box(FL_THIN_DOWN_BOX);
+        o->color(FL_WHITE);
         o->selection_color(selection_color);
         o->clear_visible_focus();
         if (screens_avail == 1)
@@ -371,21 +411,32 @@ int main(int argc, char **argv)
           o->deactivate();
         }
         o->menu(monitor_items);
-        o->value(val_screen); }
+        o->value(val_screen);
+        selection_text[TEXT_SCREEN] = " " + std::string(o->text());
+        o->label(selection_text[TEXT_SCREEN].c_str());
+        o->callback(screen_selection_cb); }
 
-      { Fl_Choice *o = language_selection = new Fl_Choice(80, 304, 246, 26, "LANGUAGE");
-        o->align(FL_ALIGN_TOP_LEFT);
-        o->labelcolor(FL_WHITE);
-        o->selection_color(selection_color);
-        o->clear_visible_focus();
-        o->menu(language_items);
-        o->value(val_lang); }
-
-      { Fl_Box *o = new Fl_Box(78, 368, 246, 26, "QUALITY");
+      { Fl_Box *o = new Fl_Box(80, 300, 246, 26, "LANGUAGE");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
+      { Fl_Menu_Button *o = language_selection = new Fl_Menu_Button(80, 304, 246, 26);
+        o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+        o->box(FL_THIN_DOWN_BOX);
+        o->down_box(FL_THIN_DOWN_BOX);
+        o->color(FL_WHITE);
+        o->selection_color(selection_color);
+        o->clear_visible_focus();
+        o->menu(language_items);
+        o->value(val_lang);
+        selection_text[TEXT_LANG] = " " + std::string(o->text());
+        o->label(selection_text[TEXT_LANG].c_str());
+        o->callback(language_selection_cb); }
 
+      { Fl_Box *o = new Fl_Box(80, 368, 246, 26, "QUALITY");
+        o->align(FL_ALIGN_TOP_LEFT);
+        o->box(FL_NO_BOX);
+        o->labelcolor(FL_WHITE); }
       { Fl_Radio_Round_Button *o[2];
         o[0] = new Fl_Radio_Round_Button(78, 370, 70, 26, " HIGH");
         o[0]->labelcolor(FL_WHITE);
@@ -413,8 +464,12 @@ int main(int argc, char **argv)
         o->down_color(button_color);
         o->clear_visible_focus();
         o->callback(launch_cb); }
+      { /* change cursor to FL_CURSOR_HAND above start button */
+        uri_box *o = new uri_box(80, 434, 246, 50);
+        o->box(FL_NO_BOX);
+        o->clear_visible_focus(); }
 
-      { uri_box *o = new uri_box(119, 526, 43, 37, NULL);
+      { uri_box *o = new uri_box(77, 532, 29, 26);
 #if (DEBUG == 1)
         o->box(FL_UP_BOX);
         o->color(FL_BLUE);
@@ -424,7 +479,7 @@ int main(int argc, char **argv)
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://twitter.com/superhotthegame"); }
 
-      { uri_box *o = new uri_box(188, 523, 26, 43, NULL);
+      { uri_box *o = new uri_box(192, 530, 20, 30);
 #if (DEBUG == 1)
         o->box(FL_UP_BOX);
         o->color(FL_BLUE);
@@ -434,7 +489,7 @@ int main(int argc, char **argv)
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://www.facebook.com/superhotgame"); }
 
-      { uri_box *o = new uri_box(240, 527, 43, 34, NULL);
+      { uri_box *o = new uri_box(302, 534, 30, 22);
 #if (DEBUG == 1)
         o->box(FL_UP_BOX);
         o->color(FL_BLUE);
