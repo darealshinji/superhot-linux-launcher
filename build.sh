@@ -20,6 +20,7 @@ fltk_revision="$(echo `svn info fltk | grep '^Revision: ' | awk '{print $2}'`)"
 
 gcc $cflags -c -o binreloc.o binreloc.c
 
+# uncomment to enable decorations by the window manager
 #cflags="$cflags -DWINDOW_DECORATION=1"
 
 libcxx/libc++-wrapper -std=c++11 $cflags \
