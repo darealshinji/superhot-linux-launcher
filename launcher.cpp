@@ -68,7 +68,16 @@
 #define ICON         icon_png
 #define ICON_LEN     icon_png_len
 
+#ifndef WINDOW_DECORATION
+#  define WINDOW_DECORATION 0
+#endif
+
 //#define DEBUG 1  /* makes boxes visible */
+#if (DEBUG == 1)
+#  define SETBOXTYPE(o)  o->box(FL_UP_BOX); o->color(FL_BLUE)
+#else
+#  define SETBOXTYPE(o)  o->box(FL_NO_BOX)
+#endif
 
 
 class uri_box : public Fl_Box
@@ -82,6 +91,20 @@ class uri_box : public Fl_Box
 
     int handle(int event);
 };
+
+#if (WINDOW_DECORATION == 0)
+class move_box : public Fl_Box
+{
+  public:
+
+    move_box(int X, int Y, int W, int H, const char *L=0)
+      : Fl_Box(X, Y, W, H, L) { }
+
+    virtual ~move_box() { }
+
+    int handle(int event);
+};
+#endif
 
 int uri_box::handle(int event)
 {
@@ -100,6 +123,33 @@ int uri_box::handle(int event)
   }
   return ret;
 }
+
+#if (WINDOW_DECORATION == 0)
+int event_x_pos = 0;
+int event_y_pos = 0;
+
+int move_box::handle(int event)
+{
+  int ret = Fl_Box::handle(event);
+  switch (event)
+  {
+    case FL_PUSH:
+      fl_cursor(FL_CURSOR_MOVE);
+      event_x_pos = Fl::event_x();
+      event_y_pos = Fl::event_y();
+      ret = event;  /* must be non-zero */
+      break;
+    case FL_DRAG:
+      do_callback();
+      break;
+    case FL_RELEASE:
+      fl_cursor(FL_CURSOR_DEFAULT);
+      break;
+  }
+  return ret;
+}
+#endif
+
 
 Fl_Window *win;
 Fl_Menu_Button *resolution_selection, *screen_selection, *language_selection;
@@ -245,17 +295,6 @@ static void open_uri_cb(Fl_Widget *, void *p)
   }
 }
 
-static void launch_cb(Fl_Widget *)
-{
-  launch_game = true;
-  win->hide();
-}
-
-static void close_cb(Fl_Widget *)
-{
-  win->hide();
-}
-
 static void resolution_selection_cb(Fl_Widget *)
 {
   selection_text[TEXT_RES] = " " + std::string(resolution_selection->text());
@@ -282,6 +321,26 @@ static void checkbutton_cb(Fl_Widget *)
 static void rb_callback(Fl_Widget *, long p)
 {
   val_quality = (int) p;
+}
+
+#if (WINDOW_DECORATION == 0)
+static void move_box_cb(Fl_Widget *)
+{
+  int x = Fl::event_x_root() - event_x_pos;
+  int y = Fl::event_y_root() - event_y_pos;
+  win->position(x, y);
+}
+#endif
+
+static void launch_cb(Fl_Widget *)
+{
+  launch_game = true;
+  win->hide();
+}
+
+static void close_cb(Fl_Widget *)
+{
+  win->hide();
 }
 
 
@@ -364,6 +423,23 @@ int main(int argc, char **argv)
     g->image(wp);
     g->align(FL_ALIGN_INSIDE);
     {
+#if (WINDOW_DECORATION == 0)
+      { move_box *o = new move_box(0, 0, 400, 120);
+        SETBOXTYPE(o);
+        o->callback(move_box_cb); }
+
+      { Fl_Button *o = new Fl_Button(366, 10, 24, 24);
+        o->box(FL_NO_BOX);
+        o->clear_visible_focus();
+        o->callback(close_cb); }
+      { uri_box *o = new uri_box(366, 10, 24, 24, "X");
+        SETBOXTYPE(o);
+        o->labelcolor(fl_rgb_color(218, 96, 84));
+        o->labelsize(30);
+        o->labelfont(FL_HELVETICA_BOLD);
+        o->clear_visible_focus(); }
+#endif
+
       { Fl_Box *o = new Fl_Box(80, 142, 246, 26, "RESOLUTION");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
@@ -382,10 +458,7 @@ int main(int argc, char **argv)
         o->callback(resolution_selection_cb); }
 
       { Fl_Check_Button *o = new Fl_Check_Button(78, 176, 116, 26, " WINDOWED");
-#if (DEBUG == 1)
-        o->box(FL_UP_BOX);
-        o->color(FL_BLUE);
-#endif
+        SETBOXTYPE(o);
         o->labelcolor(FL_WHITE);
         o->clear_visible_focus();
         if (is_fullscreen == 0)
@@ -446,12 +519,8 @@ int main(int argc, char **argv)
         o[1]->labelcolor(FL_WHITE);
         o[1]->clear_visible_focus();
         o[1]->callback(rb_callback, 1);
-#if (DEBUG == 1)
-        o[0]->box(FL_UP_BOX);
-        o[1]->box(FL_UP_BOX);
-        o[0]->color(FL_BLUE);
-        o[1]->color(FL_BLUE);
-#endif
+        SETBOXTYPE(o[0]);
+        SETBOXTYPE(o[1]);
         o[val_quality]->setonly(); }
 
       { Fl_Button *o = new Fl_Button(80, 434, 246, 50, "START SUPERHOT");
@@ -470,32 +539,17 @@ int main(int argc, char **argv)
         o->clear_visible_focus(); }
 
       { uri_box *o = new uri_box(77, 532, 29, 26);
-#if (DEBUG == 1)
-        o->box(FL_UP_BOX);
-        o->color(FL_BLUE);
-#else
-        o->box(FL_NO_BOX);
-#endif
+        SETBOXTYPE(o);
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://twitter.com/superhotthegame"); }
 
       { uri_box *o = new uri_box(192, 530, 20, 30);
-#if (DEBUG == 1)
-        o->box(FL_UP_BOX);
-        o->color(FL_BLUE);
-#else
-        o->box(FL_NO_BOX);
-#endif
+        SETBOXTYPE(o);
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://www.facebook.com/superhotgame"); }
 
       { uri_box *o = new uri_box(302, 534, 30, 22);
-#if (DEBUG == 1)
-        o->box(FL_UP_BOX);
-        o->color(FL_BLUE);
-#else
-        o->box(FL_NO_BOX);
-#endif
+        SETBOXTYPE(o);
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"mailto:people@superhotgame.com"); }
     }
@@ -509,6 +563,13 @@ int main(int argc, char **argv)
 
   win->end();
   win->show();
+
+#if (WINDOW_DECORATION == 0)
+  /* Use this _after_ show() to remove the WM decoration
+   * but keep the taskbar entry */
+  win->border(0);
+#endif
+
   Fl::run();
 
   if (launch_game)
