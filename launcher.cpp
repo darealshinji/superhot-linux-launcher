@@ -424,8 +424,8 @@ int main(int argc, char **argv)
     g->align(FL_ALIGN_INSIDE);
     {
 #if (WINDOW_DECORATION == 0)
-      { move_box *o = new move_box(0, 0, 400, 120);
-        SETBOXTYPE(o);
+      { move_box *o = new move_box(0, 0, 400, 600);
+        o->box(FL_NO_BOX);
         o->callback(move_box_cb); }
 
       { Fl_Button *o = new Fl_Button(366, 10, 24, 24);
@@ -457,7 +457,7 @@ int main(int argc, char **argv)
         o->label(selection_text[TEXT_RES].c_str());
         o->callback(resolution_selection_cb); }
 
-      { Fl_Check_Button *o = new Fl_Check_Button(78, 176, 116, 26, " WINDOWED");
+      { Fl_Check_Button *o = new Fl_Check_Button(78, 176, 110, 26, " WINDOWED");
         SETBOXTYPE(o);
         o->labelcolor(FL_WHITE);
         o->clear_visible_focus();
@@ -511,11 +511,11 @@ int main(int argc, char **argv)
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
       { Fl_Radio_Round_Button *o[2];
-        o[0] = new Fl_Radio_Round_Button(78, 370, 70, 26, " HIGH");
+        o[0] = new Fl_Radio_Round_Button(78, 370, 62, 26, " HIGH");
         o[0]->labelcolor(FL_WHITE);
         o[0]->clear_visible_focus();
         o[0]->callback(rb_callback, 0);
-        o[1] = new Fl_Radio_Round_Button(160, 370, 66, 26, " LOW");
+        o[1] = new Fl_Radio_Round_Button(160, 370, 58, 26, " LOW");
         o[1]->labelcolor(FL_WHITE);
         o[1]->clear_visible_focus();
         o[1]->callback(rb_callback, 1);
