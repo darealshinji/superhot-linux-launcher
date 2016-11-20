@@ -16,7 +16,6 @@ xxd -i icon.png >> ../resources.h
 cd ..
 
 fltk_version="$(echo `cat fltk/VERSION`)"
-fltk_revision="$(echo `svn info fltk | grep '^Revision: ' | awk '{print $2}'`)"
 
 gcc $cflags -c -o binreloc.o binreloc.c
 
@@ -25,7 +24,6 @@ gcc $cflags -c -o binreloc.o binreloc.c
 
 libcxx/libc++-wrapper -std=c++11 $cflags \
   -DPRINT_VERSION=\"$fltk_version\" \
-  -DPRINT_REVISION=\"$fltk_revision\" \
   -I./fltk \
   -I./fltk/build/usr/include \
   -I./fltk/build/usr/include/FL/images \

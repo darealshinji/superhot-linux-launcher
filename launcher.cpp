@@ -355,7 +355,7 @@ int main(int argc, char **argv)
   int val_res, val_screen, screens_avail, is_fullscreen, val_lang;
 
   /* satisfying section 4 of the FLTK license's LGPL exception */
-  std::cout << "using FLTK version " PRINT_VERSION " rev" PRINT_REVISION " (http://www.fltk.org)" << std::endl;
+  std::cout << "using FLTK version " PRINT_VERSION " (http://www.fltk.org)" << std::endl;
 
   /* get exe full path */
   if (!br_init(&brError))
