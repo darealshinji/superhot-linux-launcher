@@ -27,7 +27,10 @@ rm -rf libcxxabi/build
 mkdir -p libcxxabi/build
 cd libcxxabi/build
 
-sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" ../CMakeLists.txt
+if [ ! -f ../CMakeLists_txt_patched_stamp ]; then
+	sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" ../CMakeLists.txt
+	touch ../CMakeLists_txt_patched_stamp
+fi
 
 cmake .. -DCMAKE_BUILD_TYPE=None \
 	-DCMAKE_INSTALL_PREFIX="$prefix" \
@@ -54,8 +57,10 @@ rm -rf libcxx/build
 mkdir -p libcxx/build
 cd libcxx/build
 
-sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" \
-	../cmake/Modules/HandleOutOfTreeLLVM.cmake
+#if [ ! -f ../cmake/Modules/HandleOutOfTreeLLVM_cmake_patched_stamp ]; then
+#	sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" ../cmake/Modules/HandleOutOfTreeLLVM.cmake
+#	touch ../cmake/Modules/HandleOutOfTreeLLVM_cmake_patched_stamp
+#fi
 
 cmake .. -DCMAKE_BUILD_TYPE=None \
 	-DCMAKE_INSTALL_PREFIX="$prefix" \
@@ -65,6 +70,7 @@ cmake .. -DCMAKE_BUILD_TYPE=None \
 	-DCMAKE_C_FLAGS="$buildflags" \
 	-DLIBCXX_CXX_ABI="libcxxabi" \
 	-DLIBCXX_CXX_ABI_INCLUDE_PATHS="$checkout/libcxxabi/include" \
+	-DLIBCXX_CXX_ABI_LIBRARY_PATH="$checkout/libcxxabi/lib" \
 	-DLIBCXX_ENABLE_SHARED=OFF \
 	-DLIBCXX_ENABLE_THREADS=OFF \
 	-DLIBCXX_INCLUDE_DOCS=OFF

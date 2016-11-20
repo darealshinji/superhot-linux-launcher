@@ -1,6 +1,7 @@
 /fltk/
 /libcxx/
-/libcxx_source/
+/libcxx_source/libcxx/
+/libcxx_source/libcxxabi/
 
 /launcher
 /launcher.config
