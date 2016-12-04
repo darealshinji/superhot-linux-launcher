@@ -28,6 +28,7 @@
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_PNG_Image.H>
+#include <FL/Fl_Preferences.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Tiled_Image.H>
 #include <FL/Fl_Window.H>
@@ -35,13 +36,13 @@
 #include <FL/filename.H>
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <X11/Xlib.h>
+
+#define VENDOR "SUPERHOT team"
 
 #ifndef ENABLE_BINRELOC
 #  define ENABLE_BINRELOC
@@ -246,31 +247,6 @@ std::string itostr(int i)
   return ss.str();
 }
 
-int readconf(std::string conf, std::string conffile, int defaultVal)
-{
-  FILE *readconf;
-  /* I find forking a shell and using sed+head much easier and safer */
-  std::string command = "(sed -n 's/^" + conf + "=//p' '" + conffile +
-    "' 2>/dev/null||printf " + itostr(defaultVal) + ")|head -n1|head -c6";
-  char getvar[16];
-  int val = defaultVal;
-
-  readconf = popen(command.c_str(), "r");
-  int p = fscanf(readconf, "%s", getvar);
-  pclose(readconf);
-
-  if (p)
-  {
-    val = (int) strtol(getvar, NULL, 10);
-  }
-
-  if (val < 0)
-  {
-    val = defaultVal;
-  }
-  return val;
-}
-
 int get_number_of_screens()
 {
   Display *dp = XOpenDisplay(":0.0");
@@ -350,8 +326,8 @@ int main(int argc, char **argv)
   std::string monitor_entry[128];
 
   BrInitError brError;
-  char *exe, *exedir;
-  std::string aux, defPath, conffile;
+  char *exedir;
+  std::string aux, defPath, exe, conffile;
   int val_res, val_screen, screens_avail, is_fullscreen, val_lang;
 
   /* satisfying section 4 of the FLTK license's LGPL exception */
@@ -375,19 +351,44 @@ int main(int argc, char **argv)
         std::cerr << brError << std::endl;
     }
   }
-  exe = br_find_exe(argv[0]);
   aux = std::string(argv[0]);
   int pos  = aux.rfind('/');
   defPath  = aux.substr(0, pos + 1);
+  exe      = aux.substr(pos + 1);
   exedir   = br_find_exe_dir(defPath.c_str());
-  conffile = std::string(exe) + ".config";
+  conffile = exe + ".config";
 
   /* check configurations */
-  val_res       = readconf("resolution", conffile, resolutionsLength - 1);
-  is_fullscreen = readconf("fullscreen", conffile, 1);
-  val_lang      = readconf("language", conffile, 0);
-  val_quality   = readconf("quality", conffile, 0);
-  val_screen    = readconf("screen", conffile, 0);
+
+  Fl_Preferences prefs(exedir, VENDOR, exe.c_str());
+
+  prefs.get("resolution", val_res, 0);
+  if (!val_res)
+  {
+    val_res = resolutionsLength - 1;
+    prefs.set("resolution", val_res);
+  }
+
+  prefs.get("fullscreen", is_fullscreen, 0);
+  if (!is_fullscreen)
+  {
+    is_fullscreen = 1;
+    prefs.set("fullscreen", is_fullscreen);
+  }
+
+  prefs.get("language", val_lang, 0);
+  if (!val_lang)
+  {
+    prefs.set("language", 0);
+  }
+
+  prefs.get("quality", val_quality, 0);
+  if (!val_quality)
+  {
+    prefs.set("quality", 0);
+  }
+
+  prefs.get("screen", val_screen, 0);
   screens_avail = get_number_of_screens();
 
   if (val_screen > (screens_avail - 1) || val_screen < 0)
@@ -395,8 +396,15 @@ int main(int argc, char **argv)
     val_screen = 0;
   }
 
+  if (!val_screen)
+  {
+    prefs.set("screen", 0);
+  }
+
+#if (DEBUG == 1)
   /* test screen selection */
-  //screens_avail = 5;
+  screens_avail = 5;
+#endif
 
   /* Needs C++11:
    * launcher.cpp:*: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
@@ -580,14 +588,11 @@ int main(int argc, char **argv)
     is_fullscreen = (checkbutton_set) ? 0 : 1;
 
     /* write config file */
-    std::ofstream of;
-    of.open(conffile.c_str());
-    of << "resolution=" << itostr(val_res)       << "\n"
-       << "screen="     << itostr(val_screen)    << "\n"
-       << "fullscreen=" << itostr(is_fullscreen) << "\n"
-       << "language="   << itostr(val_lang)      << "\n"
-       << "quality="    << itostr(val_quality)   << "\n";
-    of.close();
+    prefs.set("resolution", val_res);
+    prefs.set("fullscreen", is_fullscreen);
+    prefs.set("language", val_lang);
+    prefs.set("quality", val_quality);
+    prefs.set("screen", val_screen);
 
     std::string quality[] = { "HighEnd", "LowEnd" };
 
