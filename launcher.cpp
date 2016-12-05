@@ -352,8 +352,6 @@ int main(int argc, char **argv)
   std::string monitor_entry[128];
 
   BrInitError brError;
-  char *exedir;
-  std::string aux, defPath, exe, conffile;
   int val_res, val_screen, screens_avail, is_fullscreen, val_lang;
 
   /* satisfying section 4 of the FLTK license's LGPL exception */
@@ -377,12 +375,12 @@ int main(int argc, char **argv)
         std::cerr << brError << std::endl;
     }
   }
-  aux = std::string(argv[0]);
-  int pos  = aux.rfind('/');
-  defPath  = aux.substr(0, pos + 1);
-  exe      = aux.substr(pos + 1);
-  exedir   = br_find_exe_dir(defPath.c_str());
-  conffile = exe + ".config";
+  std::string aux      = std::string(argv[0]);
+  int pos              = aux.rfind('/');
+  std::string defPath  = aux.substr(0, pos + 1);
+  std::string exe      = aux.substr(pos + 1);
+  char *exedir         = br_find_exe_dir(defPath.c_str());
+  std::string conffile = exe + ".config";
 
   /* check configurations */
 
