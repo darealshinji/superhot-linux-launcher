@@ -192,19 +192,6 @@ struct resolutionData resolutions[resolutionsLength] = {
   { 1920, 1080, "1920x1080" },
 };
 
-const char *l10n[][2] = {
-  { "EN", "English" },
-  { "PL", "Polski" },
-  { "FR", "Fran" "\xc3\xa7" "ais" },  /* Français */
-  { "DE", "Deutsch" },
-  { "RU", "\xd0\xa0" "\xd1\x83" "\xd1\x81" "\xd1\x81" "\xd0\xba" "\xd0\xb8" "\xd0\xb9" },  /* Русский */
-  { "PT", "Portugu" "\xc3\xaa" "s do Brasil" },  /* Portuguêse do Brasil */
-  { "IT", "Italiano" },
-  { "CZ", "\xc4\x8c" "e" "\xc5\xa1" "tina" },  /* Čeština */
-  { "HU", "Magyar" },
-  { "SP", "Espa" "\xc3\xb1" "ol" }  /* Español */
-};
-
 Fl_Menu_Item resolution_items[] = {
   ITEM(resolutions[0].l),
   ITEM(resolutions[1].l),
@@ -226,17 +213,34 @@ Fl_Menu_Item resolution_items[] = {
   ITEM_INIT
 };
 
+enum {
+  EN, PL, FR, DE, RU, PT, IT, CZ, HU, ES
+};
+
+const char *l10n[][2] = {
+  { "EN", "English" },
+  { "PL", "Polski" },
+  { "FR", "Fran" "\xc3\xa7" "ais" },  /* Français */
+  { "DE", "Deutsch" },
+  { "RU", "\xd0\xa0" "\xd1\x83" "\xd1\x81" "\xd1\x81" "\xd0\xba" "\xd0\xb8" "\xd0\xb9" },  /* Русский */
+  { "PT", "Portugu" "\xc3\xaa" "s do Brasil" },  /* Portuguêse do Brasil */
+  { "IT", "Italiano" },
+  { "CZ", "\xc4\x8c" "e" "\xc5\xa1" "tina" },  /* Čeština */
+  { "HU", "Magyar" },
+  { "SP", "Espa" "\xc3\xb1" "ol" }  /* Español */
+};
+
 Fl_Menu_Item language_items[] = {
-  ITEM(l10n[0][1]),
-  ITEM(l10n[1][1]),
-  ITEM(l10n[2][1]),
-  ITEM(l10n[3][1]),
-  ITEM(l10n[4][1]),
-  ITEM(l10n[5][1]),
-  ITEM(l10n[6][1]),
-  ITEM(l10n[7][1]),
-  ITEM(l10n[8][1]),
-  ITEM(l10n[9][1]),
+  ITEM(l10n[EN][1]),
+  ITEM(l10n[PL][1]),
+  ITEM(l10n[FR][1]),
+  ITEM(l10n[DE][1]),
+  ITEM(l10n[RU][1]),
+  ITEM(l10n[PT][1]),
+  ITEM(l10n[IT][1]),
+  ITEM(l10n[CZ][1]),
+  ITEM(l10n[HU][1]),
+  ITEM(l10n[ES][1]),
   ITEM_INIT
 };
 
@@ -258,6 +262,28 @@ int get_number_of_screens()
     val = 1;
   }
   return val;
+}
+
+int default_lang()
+{
+  std::string lang = std::string(getenv("LANG")).substr(0,2);
+
+  if (lang == "")
+  {
+    lang = std::string(getenv("LANGUAGE")).substr(0,2);
+  }
+
+  if      (lang == "pl") { return PL; }
+  else if (lang == "fr") { return FR; }
+  else if (lang == "de") { return DE; }
+  else if (lang == "ru") { return RU; }
+  else if (lang == "pt") { return PT; }
+  else if (lang == "it") { return IT; }
+  else if (lang == "cz") { return CZ; }
+  else if (lang == "hu") { return HU; }
+  else if (lang == "es") { return ES; }
+
+  return EN;
 }
 
 static void open_uri_cb(Fl_Widget *, void *p)
@@ -362,43 +388,46 @@ int main(int argc, char **argv)
 
   Fl_Preferences prefs(exedir, VENDOR, exe.c_str());
 
-  prefs.get("resolution", val_res, 0);
-  if (!val_res)
+  prefs.get("resolution", val_res, -1);
+  if (val_res == -1)
   {
     val_res = resolutionsLength - 1;
     prefs.set("resolution", val_res);
   }
 
-  prefs.get("fullscreen", is_fullscreen, 0);
-  if (!is_fullscreen)
+  prefs.get("fullscreen", is_fullscreen, -1);
+  if (is_fullscreen == -1)
   {
     is_fullscreen = 1;
     prefs.set("fullscreen", is_fullscreen);
   }
 
-  prefs.get("language", val_lang, 0);
-  if (!val_lang)
+  prefs.get("language", val_lang, -1);
+  if (val_lang == -1)
   {
-    prefs.set("language", 0);
+    val_lang = default_lang();
+    prefs.set("language", val_lang);
   }
 
-  prefs.get("quality", val_quality, 0);
-  if (!val_quality)
+  prefs.get("quality", val_quality, -1);
+  if (val_quality == -1)
   {
-    prefs.set("quality", 0);
+    val_quality = 0;
+    prefs.set("quality", val_quality);
   }
 
-  prefs.get("screen", val_screen, 0);
+  prefs.get("screen", val_screen, -1);
+  if (val_screen == -1)
+  {
+    val_screen = 0;
+    prefs.set("screen", val_screen);
+  }
+
   screens_avail = get_number_of_screens();
 
   if (val_screen > (screens_avail - 1) || val_screen < 0)
   {
     val_screen = 0;
-  }
-
-  if (!val_screen)
-  {
-    prefs.set("screen", 0);
   }
 
 #if (DEBUG == 1)
