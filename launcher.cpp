@@ -607,20 +607,20 @@ int main(int argc, char **argv)
 
   Fl::run();
 
+  val_res       = resolution_selection->value();
+  val_lang      = language_selection->value();
+  val_screen    = screen_selection->value();
+  is_fullscreen = (checkbutton_set) ? 0 : 1;
+
+  /* write config file */
+  prefs.set("resolution", val_res);
+  prefs.set("fullscreen", is_fullscreen);
+  prefs.set("language", val_lang);
+  prefs.set("quality", val_quality);
+  prefs.set("screen", val_screen);
+
   if (launch_game)
   {
-    val_res       = resolution_selection->value();
-    val_lang      = language_selection->value();
-    val_screen    = screen_selection->value();
-    is_fullscreen = (checkbutton_set) ? 0 : 1;
-
-    /* write config file */
-    prefs.set("resolution", val_res);
-    prefs.set("fullscreen", is_fullscreen);
-    prefs.set("language", val_lang);
-    prefs.set("quality", val_quality);
-    prefs.set("screen", val_screen);
-
     std::string quality[] = { "HighEnd", "LowEnd" };
 
     std::string command = "'" + std::string(exedir) + "/SUPERHOT." EXEEXT + "'"
