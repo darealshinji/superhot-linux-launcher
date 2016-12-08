@@ -5,6 +5,7 @@
 
 /launcher
 /launcher.prefs
+/launcher.*.prefs
 /resources.h
 
 a.out

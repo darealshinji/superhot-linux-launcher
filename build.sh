@@ -32,9 +32,8 @@ libcxx/libc++-wrapper -std=c++11 $cflags \
 
 libcxx/libc++-wrapper -o launcher launcher.o binreloc.o \
   -L./fltk/build/lib/ -lfltk_images -lfltk_png -lfltk_z -lfltk \
-  -Wl,--as-needed -Wl,--gc-sections -Wl,-z,defs -Wl,-z,relro -s \
+  -Wl,--as-needed -Wl,--gc-sections -Wl,-z,defs -Wl,-z,relro \
   -lm -lX11 -lXext -lpthread -lXinerama -lXfixes -lXcursor -lXft -lXrender -lfontconfig -ldl 
 
-if sstrip --version 2>/dev/null >/dev/null; then
-  sstrip launcher
-fi
+strip --strip-all launcher
+

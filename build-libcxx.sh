@@ -17,8 +17,9 @@ set -e
 checkout="$PWD/libcxx_source"
 mkdir -p "$checkout"
 cd "$checkout"
-test -d libcxx || svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
-test -d libcxxabi || svn co http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
+revision=$(cat last_tested_revision)
+test -d libcxx || svn co -r $revision http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
+test -d libcxxabi || svn co -r $revision http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
 
 
 ### libc++abi ###

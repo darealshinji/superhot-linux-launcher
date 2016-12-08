@@ -11,7 +11,8 @@ buildflags="-O2 -fstack-protector -ffunction-sections -fdata-sections -D_FORTIFY
 set -v
 set -e
 
-test -d fltk || svn co --username '' --password '' "http://seriss.com/public/fltk/fltk/branches/branch-1.3/" fltk
+#test -d fltk || svn co --username '' --password '' "http://seriss.com/public/fltk/fltk/branches/branch-1.3/" fltk
+test -d fltk || git clone -b fltk-1.3.4-1-source https://github.com/darealshinji/fltk-dialog fltk
 
 rm -rf fltk/build
 mkdir -p fltk/build
