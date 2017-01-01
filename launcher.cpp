@@ -380,7 +380,6 @@ int main(int argc, char **argv)
   std::string defPath  = aux.substr(0, pos + 1);
   std::string exe      = aux.substr(pos + 1);
   char *exedir         = br_find_exe_dir(defPath.c_str());
-  std::string conffile = exe + ".config";
 
   /* check configurations */
 
