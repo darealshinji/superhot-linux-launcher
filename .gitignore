@@ -6,6 +6,7 @@
 /launcher
 /launcher.prefs
 /launcher.*.prefs
+/menu_item_lists.h
 /resources.h
 
 a.out

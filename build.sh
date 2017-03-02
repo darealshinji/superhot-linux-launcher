@@ -15,6 +15,8 @@ xxd -i launcher.png > ../resources.h
 xxd -i icon.png >> ../resources.h
 cd ..
 
+./genlists.sh > menu_item_lists.h
+
 fltk_version="$(echo `cat fltk/VERSION`)"
 
 gcc $cflags -c -o binreloc.o binreloc.c

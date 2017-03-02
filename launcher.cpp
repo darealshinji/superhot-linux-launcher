@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016, djcj <djcj@gmx.de>
+ * Copyright (c) 2016-2017, djcj <djcj@gmx.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,9 +50,6 @@
 #include "binreloc.h"
 
 #define STREQ(x, y) (strcmp(x, y) == 0)
-
-#define ITEM(x)    { x, 0, 0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0 }
-#define ITEM_INIT  { 0, 0, 0, 0, 0,               0, 0,  0, 0 }
 
 #include <limits.h>
 #ifndef EXEEXT
@@ -171,78 +168,21 @@ struct resolutionData {
   const char *l;
 };
 
-const int resolutionsLength = 17;
-struct resolutionData resolutions[resolutionsLength] = {
-  {  640,  480,   "640x480" },
-  {  720,  480,   "720x480" },
-  {  720,  576,   "720x576" },
-  {  800,  600,   "800x600" },
-  { 1024,  768,  "1024x768" },
-  { 1152,  864,  "1152x864" },
-  { 1280,  720,  "1280x720" },
-  { 1280,  768,  "1280x768" },
-  { 1280,  800,  "1280x800" },
-  { 1280,  960,  "1280x960" },
-  { 1280, 1024, "1280x1024" },
-  { 1360,  768,  "1360x768" },
-  { 1366,  768,  "1366x768" },
-  { 1440,  900,  "1440x900" },
-  { 1600,  900,  "1600x900" },
-  { 1680, 1050, "1680x1050" },
-  { 1920, 1080, "1920x1080" },
-};
+#include "menu_item_lists.h"
 
-Fl_Menu_Item resolution_items[] = {
-  ITEM(resolutions[0].l),
-  ITEM(resolutions[1].l),
-  ITEM(resolutions[2].l),
-  ITEM(resolutions[3].l),
-  ITEM(resolutions[4].l),
-  ITEM(resolutions[5].l),
-  ITEM(resolutions[6].l),
-  ITEM(resolutions[7].l),
-  ITEM(resolutions[8].l),
-  ITEM(resolutions[9].l),
-  ITEM(resolutions[10].l),
-  ITEM(resolutions[11].l),
-  ITEM(resolutions[12].l),
-  ITEM(resolutions[13].l),
-  ITEM(resolutions[14].l),
-  ITEM(resolutions[15].l),
-  ITEM(resolutions[16].l),
-  ITEM_INIT
-};
 
-enum {
-  EN, PL, FR, DE, RU, PT, IT, CZ, HU, ES
-};
+int default_lang()
+{
+  std::string lang = std::string(getenv("LANG")).substr(0,2);
 
-const char *l10n[][2] = {
-  { "EN", "English" },
-  { "PL", "Polski" },
-  { "FR", "Fran" "\xc3\xa7" "ais" },  /* Français */
-  { "DE", "Deutsch" },
-  { "RU", "\xd0\xa0" "\xd1\x83" "\xd1\x81" "\xd1\x81" "\xd0\xba" "\xd0\xb8" "\xd0\xb9" },  /* Русский */
-  { "PT", "Portugu" "\xc3\xaa" "s do Brasil" },  /* Portuguêse do Brasil */
-  { "IT", "Italiano" },
-  { "CZ", "\xc4\x8c" "e" "\xc5\xa1" "tina" },  /* Čeština */
-  { "HU", "Magyar" },
-  { "SP", "Espa" "\xc3\xb1" "ol" }  /* Español */
-};
+  if (lang == "")
+  {
+    lang = std::string(getenv("LANGUAGE")).substr(0,2);
+  }
 
-Fl_Menu_Item language_items[] = {
-  ITEM(l10n[EN][1]),
-  ITEM(l10n[PL][1]),
-  ITEM(l10n[FR][1]),
-  ITEM(l10n[DE][1]),
-  ITEM(l10n[RU][1]),
-  ITEM(l10n[PT][1]),
-  ITEM(l10n[IT][1]),
-  ITEM(l10n[CZ][1]),
-  ITEM(l10n[HU][1]),
-  ITEM(l10n[ES][1]),
-  ITEM_INIT
-};
+  CHECK_L10N;
+  return EN;
+}
 
 std::string itostr(int i)
 {
@@ -262,28 +202,6 @@ int get_number_of_screens()
     val = 1;
   }
   return val;
-}
-
-int default_lang()
-{
-  std::string lang = std::string(getenv("LANG")).substr(0,2);
-
-  if (lang == "")
-  {
-    lang = std::string(getenv("LANGUAGE")).substr(0,2);
-  }
-
-  if      (lang == "pl") { return PL; }
-  else if (lang == "fr") { return FR; }
-  else if (lang == "de") { return DE; }
-  else if (lang == "ru") { return RU; }
-  else if (lang == "pt") { return PT; }
-  else if (lang == "it") { return IT; }
-  else if (lang == "cz") { return CZ; }
-  else if (lang == "hu") { return HU; }
-  else if (lang == "es") { return ES; }
-
-  return EN;
 }
 
 static void open_uri_cb(Fl_Widget *, void *p)
@@ -388,7 +306,7 @@ int main(int argc, char **argv)
   prefs.get("resolution", val_res, -1);
   if (val_res == -1)
   {
-    val_res = resolutionsLength - 1;
+    val_res = HIGHEST_RESOLUTION;
     prefs.set("resolution", val_res);
   }
 
@@ -438,9 +356,9 @@ int main(int argc, char **argv)
   for (int i = 0; i < screens_avail; ++i)
   {
     monitor_entry[i] = "Screen " + itostr(i + 1);
-    monitor_items[i] = ITEM(monitor_entry[i].c_str());
+    monitor_items[i] = { monitor_entry[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0,14,0 };
   }
-  monitor_items[screens_avail] = ITEM_INIT;
+  monitor_items[screens_avail] = { 0,0,0,0,0,0,0,0,0 };
 
   Fl_PNG_Image win_icon(NULL, ICON, (int) ICON_LEN);
   Fl_Window::default_icon(&win_icon);

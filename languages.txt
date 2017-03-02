@@ -1,0 +1,10 @@
+en EN English
+pl PL Polski
+fr FR Français
+de DE Deutsch
+ru RU Русский
+pt PT Portuguêse do Brasil
+it IT Italiano
+cz CZ Čeština
+hu HU Magyar
+es SP Español
