@@ -28,9 +28,9 @@ rm -rf libcxxabi/build
 mkdir -p libcxxabi/build
 cd libcxxabi/build
 
-if [ ! -f ../CMakeLists_txt_patched_stamp ]; then
+if [ ! -f ../CMakeLists.txt.orig ]; then
+	cp ../CMakeLists.txt ../CMakeLists.txt.orig
 	sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" ../CMakeLists.txt
-	touch ../CMakeLists_txt_patched_stamp
 fi
 
 cmake .. -DCMAKE_BUILD_TYPE=None \
@@ -57,11 +57,6 @@ cd "$checkout"
 rm -rf libcxx/build
 mkdir -p libcxx/build
 cd libcxx/build
-
-#if [ ! -f ../cmake/Modules/HandleOutOfTreeLLVM_cmake_patched_stamp ]; then
-#	sed -i "s|\${LLVM_BINARY_DIR}\/lib\${LLVM_LIBDIR_SUFFIX}\/cmake\/llvm|$llvm_cmake_dir|" ../cmake/Modules/HandleOutOfTreeLLVM.cmake
-#	touch ../cmake/Modules/HandleOutOfTreeLLVM_cmake_patched_stamp
-#fi
 
 cmake .. -DCMAKE_BUILD_TYPE=None \
 	-DCMAKE_INSTALL_PREFIX="$prefix" \
