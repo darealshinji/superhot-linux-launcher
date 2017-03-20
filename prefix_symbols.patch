@@ -1,0 +1,451 @@
+--- a/fltk/png/pnglibconf.h
++++ b/fltk/png/pnglibconf.h
+@@ -58,7 +58,7 @@
+ #define PNG_READ_GET_PALETTE_MAX_SUPPORTED
+ #define PNG_READ_GRAY_TO_RGB_SUPPORTED
+ #define PNG_READ_INTERLACING_SUPPORTED
+-#define PNG_READ_INT_FUNCTIONS_SUPPORTED
++/*#define PNG_READ_INT_FUNCTIONS_SUPPORTED*/
+ #define PNG_READ_INVERT_ALPHA_SUPPORTED
+ #define PNG_READ_INVERT_SUPPORTED
+ #define PNG_READ_OPT_PLTE_SUPPORTED
+@@ -206,4 +206,248 @@
+ #define PNG_sCAL_PRECISION 5
+ #define PNG_sRGB_PROFILE_CHECKS 2
+ /* end of settings */
++#define png_access_version_number fltk_png_access_version_number
++#define png_benign_error fltk_png_benign_error
++#define png_build_grayscale_palette fltk_png_build_grayscale_palette
++#define png_calloc fltk_png_calloc
++#define png_chunk_benign_error fltk_png_chunk_benign_error
++#define png_chunk_error fltk_png_chunk_error
++#define png_chunk_warning fltk_png_chunk_warning
++#define png_convert_from_struct_tm fltk_png_convert_from_struct_tm
++#define png_convert_from_time_t fltk_png_convert_from_time_t
++#define png_convert_to_rfc1123 fltk_png_convert_to_rfc1123
++#define png_convert_to_rfc1123_buffer fltk_png_convert_to_rfc1123_buffer
++#define png_create_info_struct fltk_png_create_info_struct
++#define png_create_read_struct fltk_png_create_read_struct
++#define png_create_read_struct_2 fltk_png_create_read_struct_2
++#define png_create_write_struct fltk_png_create_write_struct
++#define png_create_write_struct_2 fltk_png_create_write_struct_2
++#define png_data_freer fltk_png_data_freer
++#define png_destroy_info_struct fltk_png_destroy_info_struct
++#define png_destroy_read_struct fltk_png_destroy_read_struct
++#define png_destroy_write_struct fltk_png_destroy_write_struct
++#define png_error fltk_png_error
++#define png_free fltk_png_free
++#define png_free_data fltk_png_free_data
++#define png_free_default fltk_png_free_default
++#define png_get_IHDR fltk_png_get_IHDR
++#define png_get_PLTE fltk_png_get_PLTE
++#define png_get_bKGD fltk_png_get_bKGD
++#define png_get_bit_depth fltk_png_get_bit_depth
++#define png_get_cHRM fltk_png_get_cHRM
++#define png_get_cHRM_XYZ fltk_png_get_cHRM_XYZ
++#define png_get_cHRM_XYZ_fixed fltk_png_get_cHRM_XYZ_fixed
++#define png_get_cHRM_fixed fltk_png_get_cHRM_fixed
++#define png_get_channels fltk_png_get_channels
++#define png_get_chunk_cache_max fltk_png_get_chunk_cache_max
++#define png_get_chunk_malloc_max fltk_png_get_chunk_malloc_max
++#define png_get_color_type fltk_png_get_color_type
++#define png_get_compression_buffer_size fltk_png_get_compression_buffer_size
++#define png_get_compression_type fltk_png_get_compression_type
++#define png_get_copyright fltk_png_get_copyright
++#define png_get_current_pass_number fltk_png_get_current_pass_number
++#define png_get_current_row_number fltk_png_get_current_row_number
++#define png_get_error_ptr fltk_png_get_error_ptr
++#define png_get_filter_type fltk_png_get_filter_type
++#define png_get_gAMA fltk_png_get_gAMA
++#define png_get_gAMA_fixed fltk_png_get_gAMA_fixed
++#define png_get_hIST fltk_png_get_hIST
++#define png_get_header_ver fltk_png_get_header_ver
++#define png_get_header_version fltk_png_get_header_version
++#define png_get_iCCP fltk_png_get_iCCP
++#define png_get_image_height fltk_png_get_image_height
++#define png_get_image_width fltk_png_get_image_width
++//#define png_get_int_32 fltk_png_get_int_32
++#define png_get_interlace_type fltk_png_get_interlace_type
++#define png_get_io_chunk_type fltk_png_get_io_chunk_type
++#define png_get_io_ptr fltk_png_get_io_ptr
++#define png_get_io_state fltk_png_get_io_state
++#define png_get_libpng_ver fltk_png_get_libpng_ver
++#define png_get_mem_ptr fltk_png_get_mem_ptr
++#define png_get_oFFs fltk_png_get_oFFs
++#define png_get_pCAL fltk_png_get_pCAL
++#define png_get_pHYs fltk_png_get_pHYs
++#define png_get_pHYs_dpi fltk_png_get_pHYs_dpi
++#define png_get_palette_max fltk_png_get_palette_max
++#define png_get_pixel_aspect_ratio fltk_png_get_pixel_aspect_ratio
++#define png_get_pixel_aspect_ratio_fixed fltk_png_get_pixel_aspect_ratio_fixed
++#define png_get_pixels_per_inch fltk_png_get_pixels_per_inch
++#define png_get_pixels_per_meter fltk_png_get_pixels_per_meter
++#define png_get_progressive_ptr fltk_png_get_progressive_ptr
++#define png_get_rgb_to_gray_status fltk_png_get_rgb_to_gray_status
++#define png_get_rowbytes fltk_png_get_rowbytes
++#define png_get_rows fltk_png_get_rows
++#define png_get_sBIT fltk_png_get_sBIT
++#define png_get_sCAL fltk_png_get_sCAL
++#define png_get_sCAL_fixed fltk_png_get_sCAL_fixed
++#define png_get_sCAL_s fltk_png_get_sCAL_s
++#define png_get_sPLT fltk_png_get_sPLT
++#define png_get_sRGB fltk_png_get_sRGB
++#define png_get_signature fltk_png_get_signature
++#define png_get_tIME fltk_png_get_tIME
++#define png_get_tRNS fltk_png_get_tRNS
++#define png_get_text fltk_png_get_text
++//#define png_get_uint_16 fltk_png_get_uint_16
++#define png_get_uint_31 fltk_png_get_uint_31
++//#define png_get_uint_32 fltk_png_get_uint_32
++#define png_get_unknown_chunks fltk_png_get_unknown_chunks
++#define png_get_user_chunk_ptr fltk_png_get_user_chunk_ptr
++#define png_get_user_height_max fltk_png_get_user_height_max
++#define png_get_user_transform_ptr fltk_png_get_user_transform_ptr
++#define png_get_user_width_max fltk_png_get_user_width_max
++#define png_get_valid fltk_png_get_valid
++#define png_get_x_offset_inches fltk_png_get_x_offset_inches
++#define png_get_x_offset_inches_fixed fltk_png_get_x_offset_inches_fixed
++#define png_get_x_offset_microns fltk_png_get_x_offset_microns
++#define png_get_x_offset_pixels fltk_png_get_x_offset_pixels
++#define png_get_x_pixels_per_inch fltk_png_get_x_pixels_per_inch
++#define png_get_x_pixels_per_meter fltk_png_get_x_pixels_per_meter
++#define png_get_y_offset_inches fltk_png_get_y_offset_inches
++#define png_get_y_offset_inches_fixed fltk_png_get_y_offset_inches_fixed
++#define png_get_y_offset_microns fltk_png_get_y_offset_microns
++#define png_get_y_offset_pixels fltk_png_get_y_offset_pixels
++#define png_get_y_pixels_per_inch fltk_png_get_y_pixels_per_inch
++#define png_get_y_pixels_per_meter fltk_png_get_y_pixels_per_meter
++#define png_handle_as_unknown fltk_png_handle_as_unknown
++#define png_image_begin_read_from_file fltk_png_image_begin_read_from_file
++#define png_image_begin_read_from_memory fltk_png_image_begin_read_from_memory
++#define png_image_begin_read_from_stdio fltk_png_image_begin_read_from_stdio
++#define png_image_finish_read fltk_png_image_finish_read
++#define png_image_free fltk_png_image_free
++#define png_image_write_to_file fltk_png_image_write_to_file
++#define png_image_write_to_stdio fltk_png_image_write_to_stdio
++#define png_info_init_3 fltk_png_info_init_3
++#define png_init_io fltk_png_init_io
++#define png_longjmp fltk_png_longjmp
++#define png_malloc fltk_png_malloc
++#define png_malloc_default fltk_png_malloc_default
++#define png_malloc_warn fltk_png_malloc_warn
++#define png_permit_mng_features fltk_png_permit_mng_features
++#define png_process_data fltk_png_process_data
++#define png_process_data_pause fltk_png_process_data_pause
++#define png_process_data_skip fltk_png_process_data_skip
++#define png_progressive_combine_row fltk_png_progressive_combine_row
++#define png_read_end fltk_png_read_end
++#define png_read_image fltk_png_read_image
++#define png_read_info fltk_png_read_info
++#define png_read_png fltk_png_read_png
++#define png_read_row fltk_png_read_row
++#define png_read_rows fltk_png_read_rows
++#define png_read_update_info fltk_png_read_update_info
++#define png_reset_zstream fltk_png_reset_zstream
++#define png_save_int_32 fltk_png_save_int_32
++#define png_save_uint_16 fltk_png_save_uint_16
++#define png_save_uint_32 fltk_png_save_uint_32
++#define png_set_IHDR fltk_png_set_IHDR
++#define png_set_PLTE fltk_png_set_PLTE
++#define png_set_add_alpha fltk_png_set_add_alpha
++#define png_set_alpha_mode fltk_png_set_alpha_mode
++#define png_set_alpha_mode_fixed fltk_png_set_alpha_mode_fixed
++#define png_set_bKGD fltk_png_set_bKGD
++#define png_set_background fltk_png_set_background
++#define png_set_background_fixed fltk_png_set_background_fixed
++#define png_set_benign_errors fltk_png_set_benign_errors
++#define png_set_bgr fltk_png_set_bgr
++#define png_set_cHRM fltk_png_set_cHRM
++#define png_set_cHRM_XYZ fltk_png_set_cHRM_XYZ
++#define png_set_cHRM_XYZ_fixed fltk_png_set_cHRM_XYZ_fixed
++#define png_set_cHRM_fixed fltk_png_set_cHRM_fixed
++#define png_set_check_for_invalid_index fltk_png_set_check_for_invalid_index
++#define png_set_chunk_cache_max fltk_png_set_chunk_cache_max
++#define png_set_chunk_malloc_max fltk_png_set_chunk_malloc_max
++#define png_set_compression_buffer_size fltk_png_set_compression_buffer_size
++#define png_set_compression_level fltk_png_set_compression_level
++#define png_set_compression_mem_level fltk_png_set_compression_mem_level
++#define png_set_compression_method fltk_png_set_compression_method
++#define png_set_compression_strategy fltk_png_set_compression_strategy
++#define png_set_compression_window_bits fltk_png_set_compression_window_bits
++#define png_set_crc_action fltk_png_set_crc_action
++#define png_set_error_fn fltk_png_set_error_fn
++#define png_set_expand fltk_png_set_expand
++#define png_set_expand_16 fltk_png_set_expand_16
++#define png_set_expand_gray_1_2_4_to_8 fltk_png_set_expand_gray_1_2_4_to_8
++#define png_set_filler fltk_png_set_filler
++#define png_set_filter fltk_png_set_filter
++#define png_set_filter_heuristics fltk_png_set_filter_heuristics
++#define png_set_filter_heuristics_fixed fltk_png_set_filter_heuristics_fixed
++#define png_set_flush fltk_png_set_flush
++#define png_set_gAMA fltk_png_set_gAMA
++#define png_set_gAMA_fixed fltk_png_set_gAMA_fixed
++#define png_set_gamma fltk_png_set_gamma
++#define png_set_gamma_fixed fltk_png_set_gamma_fixed
++#define png_set_gray_to_rgb fltk_png_set_gray_to_rgb
++#define png_set_hIST fltk_png_set_hIST
++#define png_set_iCCP fltk_png_set_iCCP
++#define png_set_interlace_handling fltk_png_set_interlace_handling
++#define png_set_invalid fltk_png_set_invalid
++#define png_set_invert_alpha fltk_png_set_invert_alpha
++#define png_set_invert_mono fltk_png_set_invert_mono
++#define png_set_keep_unknown_chunks fltk_png_set_keep_unknown_chunks
++#define png_set_longjmp_fn fltk_png_set_longjmp_fn
++#define png_set_mem_fn fltk_png_set_mem_fn
++#define png_set_oFFs fltk_png_set_oFFs
++#define png_set_option fltk_png_set_option
++#define png_set_pCAL fltk_png_set_pCAL
++#define png_set_pHYs fltk_png_set_pHYs
++#define png_set_packing fltk_png_set_packing
++#define png_set_packswap fltk_png_set_packswap
++#define png_set_palette_to_rgb fltk_png_set_palette_to_rgb
++#define png_set_progressive_read_fn fltk_png_set_progressive_read_fn
++#define png_set_quantize fltk_png_set_quantize
++#define png_set_read_fn fltk_png_set_read_fn
++#define png_set_read_status_fn fltk_png_set_read_status_fn
++#define png_set_read_user_chunk_fn fltk_png_set_read_user_chunk_fn
++#define png_set_read_user_transform_fn fltk_png_set_read_user_transform_fn
++#define png_set_rgb_to_gray fltk_png_set_rgb_to_gray
++#define png_set_rgb_to_gray_fixed fltk_png_set_rgb_to_gray_fixed
++#define png_set_rows fltk_png_set_rows
++#define png_set_sBIT fltk_png_set_sBIT
++#define png_set_sCAL fltk_png_set_sCAL
++#define png_set_sCAL_fixed fltk_png_set_sCAL_fixed
++#define png_set_sCAL_s fltk_png_set_sCAL_s
++#define png_set_sPLT fltk_png_set_sPLT
++#define png_set_sRGB fltk_png_set_sRGB
++#define png_set_sRGB_gAMA_and_cHRM fltk_png_set_sRGB_gAMA_and_cHRM
++#define png_set_scale_16 fltk_png_set_scale_16
++#define png_set_shift fltk_png_set_shift
++#define png_set_sig_bytes fltk_png_set_sig_bytes
++#define png_set_strip_16 fltk_png_set_strip_16
++#define png_set_strip_alpha fltk_png_set_strip_alpha
++#define png_set_swap fltk_png_set_swap
++#define png_set_swap_alpha fltk_png_set_swap_alpha
++#define png_set_tIME fltk_png_set_tIME
++#define png_set_tRNS fltk_png_set_tRNS
++#define png_set_tRNS_to_alpha fltk_png_set_tRNS_to_alpha
++#define png_set_text fltk_png_set_text
++#define png_set_text_compression_level fltk_png_set_text_compression_level
++#define png_set_text_compression_mem_level fltk_png_set_text_compression_mem_level
++#define png_set_text_compression_method fltk_png_set_text_compression_method
++#define png_set_text_compression_strategy fltk_png_set_text_compression_strategy
++#define png_set_text_compression_window_bits fltk_png_set_text_compression_window_bits
++#define png_set_unknown_chunk_location fltk_png_set_unknown_chunk_location
++#define png_set_unknown_chunks fltk_png_set_unknown_chunks
++#define png_set_user_limits fltk_png_set_user_limits
++#define png_set_user_transform_info fltk_png_set_user_transform_info
++#define png_set_write_fn fltk_png_set_write_fn
++#define png_set_write_status_fn fltk_png_set_write_status_fn
++#define png_set_write_user_transform_fn fltk_png_set_write_user_transform_fn
++#define png_sig_cmp fltk_png_sig_cmp
++#define png_start_read_image fltk_png_start_read_image
++#define png_warning fltk_png_warning
++#define png_write_chunk fltk_png_write_chunk
++#define png_write_chunk_data fltk_png_write_chunk_data
++#define png_write_chunk_end fltk_png_write_chunk_end
++#define png_write_chunk_start fltk_png_write_chunk_start
++#define png_write_end fltk_png_write_end
++#define png_write_flush fltk_png_write_flush
++#define png_write_image fltk_png_write_image
++#define png_write_info fltk_png_write_info
++#define png_write_info_before_PLTE fltk_png_write_info_before_PLTE
++#define png_write_png fltk_png_write_png
++#define png_write_row fltk_png_write_row
++#define png_write_rows fltk_png_write_rows
++#define png_write_sig fltk_png_write_sig
++//#define fltk_png_get_uint_32(buf) PNG_get_uint_32(buf)
++//#define fltk_png_get_uint_16(buf) PNG_get_uint_16(buf)
++//#define fltk_png_get_int_32(buf) PNG_get_int_32(buf)
+ #endif /* PNGLCONF_H */
+--- a/fltk/zlib/zconf.h
++++ b/fltk/zlib/zconf.h
+@@ -23,45 +23,45 @@
+  * Even better than compiling with -DZ_PREFIX would be to use configure to set
+  * this permanently in zconf.h using "./configure --zprefix".
+  */
+-#ifdef Z_PREFIX     /* may be set to #if 1 by ./configure */
++//#ifdef Z_PREFIX     /* may be set to #if 1 by ./configure */
+ #  define Z_PREFIX_SET
+ 
+ /* all linked symbols */
+-#  define _dist_code            z__dist_code
+-#  define _length_code          z__length_code
+-#  define _tr_align             z__tr_align
+-#  define _tr_flush_bits        z__tr_flush_bits
+-#  define _tr_flush_block       z__tr_flush_block
+-#  define _tr_init              z__tr_init
+-#  define _tr_stored_block      z__tr_stored_block
+-#  define _tr_tally             z__tr_tally
+-#  define adler32               z_adler32
+-#  define adler32_combine       z_adler32_combine
+-#  define adler32_combine64     z_adler32_combine64
++#  define _dist_code            fltk_z__dist_code
++#  define _length_code          fltk_z__length_code
++#  define _tr_align             fltk_z__tr_align
++#  define _tr_flush_bits        fltk_z__tr_flush_bits
++#  define _tr_flush_block       fltk_z__tr_flush_block
++#  define _tr_init              fltk_z__tr_init
++#  define _tr_stored_block      fltk_z__tr_stored_block
++#  define _tr_tally             fltk_z__tr_tally
++#  define adler32               fltk_z_adler32
++#  define adler32_combine       fltk_z_adler32_combine
++#  define adler32_combine64     fltk_z_adler32_combine64
+ #  ifndef Z_SOLO
+ #    define compress              z_compress
+ #    define compress2             z_compress2
+ #    define compressBound         z_compressBound
+ #  endif
+-#  define crc32                 z_crc32
+-#  define crc32_combine         z_crc32_combine
+-#  define crc32_combine64       z_crc32_combine64
+-#  define deflate               z_deflate
+-#  define deflateBound          z_deflateBound
+-#  define deflateCopy           z_deflateCopy
+-#  define deflateEnd            z_deflateEnd
+-#  define deflateInit2_         z_deflateInit2_
+-#  define deflateInit_          z_deflateInit_
+-#  define deflateParams         z_deflateParams
+-#  define deflatePending        z_deflatePending
+-#  define deflatePrime          z_deflatePrime
+-#  define deflateReset          z_deflateReset
+-#  define deflateResetKeep      z_deflateResetKeep
+-#  define deflateSetDictionary  z_deflateSetDictionary
+-#  define deflateSetHeader      z_deflateSetHeader
+-#  define deflateTune           z_deflateTune
+-#  define deflate_copyright     z_deflate_copyright
+-#  define get_crc_table         z_get_crc_table
++#  define crc32                 fltk_z_crc32
++#  define crc32_combine         fltk_z_crc32_combine
++#  define crc32_combine64       fltk_z_crc32_combine64
++#  define deflate               fltk_z_deflate
++#  define deflateBound          fltk_z_deflateBound
++#  define deflateCopy           fltk_z_deflateCopy
++#  define deflateEnd            fltk_z_deflateEnd
++#  define deflateInit2_         fltk_z_deflateInit2_
++#  define deflateInit_          fltk_z_deflateInit_
++#  define deflateParams         fltk_z_deflateParams
++#  define deflatePending        fltk_z_deflatePending
++#  define deflatePrime          fltk_z_deflatePrime
++#  define deflateReset          fltk_z_deflateReset
++#  define deflateResetKeep      fltk_z_deflateResetKeep
++#  define deflateSetDictionary  fltk_z_deflateSetDictionary
++#  define deflateSetHeader      fltk_z_deflateSetHeader
++#  define deflateTune           fltk_z_deflateTune
++#  define deflate_copyright     fltk_z_deflate_copyright
++#  define get_crc_table         fltk_z_get_crc_table
+ #  ifndef Z_SOLO
+ #    define gz_error              z_gz_error
+ #    define gz_intmax             z_gz_intmax
+@@ -100,66 +100,66 @@
+ #    define gzungetc              z_gzungetc
+ #    define gzwrite               z_gzwrite
+ #  endif
+-#  define inflate               z_inflate
+-#  define inflateBack           z_inflateBack
+-#  define inflateBackEnd        z_inflateBackEnd
+-#  define inflateBackInit_      z_inflateBackInit_
+-#  define inflateCopy           z_inflateCopy
+-#  define inflateEnd            z_inflateEnd
+-#  define inflateGetHeader      z_inflateGetHeader
+-#  define inflateInit2_         z_inflateInit2_
+-#  define inflateInit_          z_inflateInit_
+-#  define inflateMark           z_inflateMark
+-#  define inflatePrime          z_inflatePrime
+-#  define inflateReset          z_inflateReset
+-#  define inflateReset2         z_inflateReset2
+-#  define inflateSetDictionary  z_inflateSetDictionary
+-#  define inflateGetDictionary  z_inflateGetDictionary
+-#  define inflateSync           z_inflateSync
+-#  define inflateSyncPoint      z_inflateSyncPoint
+-#  define inflateUndermine      z_inflateUndermine
+-#  define inflateResetKeep      z_inflateResetKeep
+-#  define inflate_copyright     z_inflate_copyright
+-#  define inflate_fast          z_inflate_fast
+-#  define inflate_table         z_inflate_table
++#  define inflate               fltk_z_inflate
++#  define inflateBack           fltk_z_inflateBack
++#  define inflateBackEnd        fltk_z_inflateBackEnd
++#  define inflateBackInit_      fltk_z_inflateBackInit_
++#  define inflateCopy           fltk_z_inflateCopy
++#  define inflateEnd            fltk_z_inflateEnd
++#  define inflateGetHeader      fltk_z_inflateGetHeader
++#  define inflateInit2_         fltk_z_inflateInit2_
++#  define inflateInit_          fltk_z_inflateInit_
++#  define inflateMark           fltk_z_inflateMark
++#  define inflatePrime          fltk_z_inflatePrime
++#  define inflateReset          fltk_z_inflateReset
++#  define inflateReset2         fltk_z_inflateReset2
++#  define inflateSetDictionary  fltk_z_inflateSetDictionary
++#  define inflateGetDictionary  fltk_z_inflateGetDictionary
++#  define inflateSync           fltk_z_inflateSync
++#  define inflateSyncPoint      fltk_z_inflateSyncPoint
++#  define inflateUndermine      fltk_z_inflateUndermine
++#  define inflateResetKeep      fltk_z_inflateResetKeep
++#  define inflate_copyright     fltk_z_inflate_copyright
++#  define inflate_fast          fltk_z_inflate_fast
++#  define inflate_table         fltk_z_inflate_table
+ #  ifndef Z_SOLO
+ #    define uncompress            z_uncompress
+ #  endif
+-#  define zError                z_zError
++#  define zError                fltk_z_zError
+ #  ifndef Z_SOLO
+ #    define zcalloc               z_zcalloc
+ #    define zcfree                z_zcfree
+ #  endif
+-#  define zlibCompileFlags      z_zlibCompileFlags
+-#  define zlibVersion           z_zlibVersion
++#  define zlibCompileFlags      fltk_z_zlibCompileFlags
++#  define zlibVersion           fltk_z_zlibVersion
+ 
+ /* all zlib typedefs in zlib.h and zconf.h */
+-#  define Byte                  z_Byte
+-#  define Bytef                 z_Bytef
+-#  define alloc_func            z_alloc_func
+-#  define charf                 z_charf
+-#  define free_func             z_free_func
++#  define Byte                  fltk_z_Byte
++#  define Bytef                 fltk_z_Bytef
++#  define alloc_func            fltk_z_alloc_func
++#  define charf                 fltk_z_charf
++#  define free_func             fltk_z_free_func
+ #  ifndef Z_SOLO
+ #    define gzFile                z_gzFile
+ #  endif
+-#  define gz_header             z_gz_header
+-#  define gz_headerp            z_gz_headerp
+-#  define in_func               z_in_func
+-#  define intf                  z_intf
+-#  define out_func              z_out_func
+-#  define uInt                  z_uInt
+-#  define uIntf                 z_uIntf
+-#  define uLong                 z_uLong
+-#  define uLongf                z_uLongf
+-#  define voidp                 z_voidp
+-#  define voidpc                z_voidpc
+-#  define voidpf                z_voidpf
++#  define gz_header             fltk_z_gz_header
++#  define gz_headerp            fltk_z_gz_headerp
++#  define in_func               fltk_z_in_func
++#  define intf                  fltk_z_intf
++#  define out_func              fltk_z_out_func
++#  define uInt                  fltk_z_uInt
++#  define uIntf                 fltk_z_uIntf
++#  define uLong                 fltk_z_uLong
++#  define uLongf                fltk_z_uLongf
++#  define voidp                 fltk_z_voidp
++#  define voidpc                fltk_z_voidpc
++#  define voidpf                fltk_z_voidpf
+ 
+ /* all zlib structs in zlib.h and zconf.h */
+-#  define gz_header_s           z_gz_header_s
+-#  define internal_state        z_internal_state
++#  define gz_header_s           fltk_z_gz_header_s
++#  define internal_state        fltk_z_internal_state
+ 
+-#endif
++//#endif
+ 
+ #if defined(__MSDOS__) && !defined(MSDOS)
+ #  define MSDOS
