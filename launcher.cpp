@@ -39,7 +39,6 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
-#include <cstring>
 #include <X11/Xlib.h>
 
 #define VENDOR "SUPERHOT team"
@@ -49,7 +48,7 @@
 #endif
 #include "binreloc.h"
 
-#define STREQ(x, y) (strcmp(x, y) == 0)
+#define MAX_MONITORS 32
 
 #include <limits.h>
 #ifndef EXEEXT
@@ -76,6 +75,10 @@
 #else
 #  define SETBOXTYPE(o)  o->box(FL_NO_BOX)
 #endif
+
+#define GETPREFS(entry, value, default, max) \
+  prefs.get(entry, value, -1); \
+  if (value < 0 || value > max) { value = default; }
 
 
 class uri_box : public Fl_Box
@@ -179,9 +182,7 @@ int default_lang()
   {
     lang = std::string(getenv("LANGUAGE")).substr(0,2);
   }
-
   CHECK_L10N;
-  return EN;
 }
 
 std::string itostr(int i)
@@ -266,8 +267,8 @@ static void close_cb(Fl_Widget *)
 
 int main(int argc, char **argv)
 {
-  Fl_Menu_Item monitor_items[128];
-  std::string monitor_entry[128];
+  Fl_Menu_Item monitor_items[MAX_MONITORS];
+  std::string monitor_entry[MAX_MONITORS];
 
   BrInitError brError;
   int val_res, val_screen, screens_avail, is_fullscreen, val_lang;
@@ -278,87 +279,48 @@ int main(int argc, char **argv)
   /* get exe full path */
   if (!br_init(&brError))
   {
-    std::cerr << "*** BinReloc failed to initialize. Error: ";
-    switch (brError)
-    {
-      case BR_INIT_ERROR_NOMEM:
-        std::cerr << "cannot allocate memory" << std::endl;
-      case BR_INIT_ERROR_OPEN_MAPS:
-        std::cerr << "unable to open /proc/self/maps" << std::endl;
-      case BR_INIT_ERROR_READ_MAPS:
-        std::cerr << "unable to read from /proc/self/maps" << std::endl;
-      case BR_INIT_ERROR_INVALID_MAPS:
-        std::cerr << "the file format of /proc/self/maps is invalid" << std::endl;
-      default:
-        std::cerr << brError << std::endl;
-    }
+    std::cerr << "*** BinReloc failed to initialize. Error: " << brError << std::endl;
   }
-  std::string aux      = std::string(argv[0]);
-  int pos              = aux.rfind('/');
-  std::string defPath  = aux.substr(0, pos + 1);
-  std::string exe      = aux.substr(pos + 1);
-  char *exedir         = br_find_exe_dir(defPath.c_str());
+  std::string aux     = std::string(argv[0]);
+  int pos             = aux.rfind('/');
+  std::string defPath = aux.substr(0, pos + 1);
+  std::string exe     = aux.substr(pos + 1);
+  char *exedir        = br_find_exe_dir(defPath.c_str());
 
   /* check configurations */
-
   Fl_Preferences prefs(exedir, VENDOR, exe.c_str());
-
-  prefs.get("resolution", val_res, -1);
-  if (val_res == -1)
-  {
-    val_res = HIGHEST_RESOLUTION;
-    prefs.set("resolution", val_res);
-  }
-
-  prefs.get("fullscreen", is_fullscreen, -1);
-  if (is_fullscreen == -1)
-  {
-    is_fullscreen = 1;
-    prefs.set("fullscreen", is_fullscreen);
-  }
-
-  prefs.get("language", val_lang, -1);
-  if (val_lang == -1)
-  {
-    val_lang = default_lang();
-    prefs.set("language", val_lang);
-  }
-
-  prefs.get("quality", val_quality, -1);
-  if (val_quality == -1)
-  {
-    val_quality = 0;
-    prefs.set("quality", val_quality);
-  }
-
-  prefs.get("screen", val_screen, -1);
-  if (val_screen == -1)
-  {
-    val_screen = 0;
-    prefs.set("screen", val_screen);
-  }
-
+  GETPREFS("resolution", val_res, MAX_RES, MAX_RES);
+  GETPREFS("fullscreen", is_fullscreen, 1, 1);
+  GETPREFS("language", val_lang, default_lang(), MAX_LANG);
+  GETPREFS("quality", val_quality, 0, 1);
   screens_avail = get_number_of_screens();
-
-  if (val_screen > (screens_avail - 1) || val_screen < 0)
-  {
-    val_screen = 0;
-  }
+  GETPREFS("screen", val_screen, 0, screens_avail - 1);
 
 #if (DEBUG == 1)
   /* test screen selection */
   screens_avail = 5;
 #endif
 
-  /* Needs C++11:
-   * launcher.cpp:*: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
-   */
-  for (int i = 0; i < screens_avail; ++i)
+  for (int i = 0; i <= screens_avail; ++i)
   {
-    monitor_entry[i] = "Screen " + itostr(i + 1);
-    monitor_items[i] = { monitor_entry[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0,14,0 };
+    if (i < screens_avail)
+    {
+      monitor_entry[i] = "Screen " + itostr(i + 1);
+      monitor_items[i].text = monitor_entry[i].c_str();
+    }
+    else
+    {
+      monitor_items[i].text = 0;
+    }
+    monitor_items[i].shortcut_ = 0;
+    monitor_items[i].callback_ = 0;
+    monitor_items[i].user_data_ = 0;
+    monitor_items[i].flags = 0;
+    monitor_items[i].labeltype_ = (i == screens_avail) ? 0 : FL_NORMAL_LABEL;
+    monitor_items[i].labelfont_ = 0;
+    monitor_items[i].labelsize_ = (i == screens_avail) ? 0 : 14;
+    monitor_items[i].labelcolor_ = 0;
   }
-  monitor_items[screens_avail] = { 0,0,0,0,0,0,0,0,0 };
 
   Fl_PNG_Image win_icon(NULL, ICON, (int) ICON_LEN);
   Fl_Window::default_icon(&win_icon);
@@ -538,6 +500,8 @@ int main(int argc, char **argv)
 
   if (launch_game)
   {
+    Fl::check();
+
     std::string quality[] = { "HighEnd", "LowEnd" };
 
     std::string command = "'" + std::string(exedir) + "/SUPERHOT." EXEEXT + "'"
@@ -548,9 +512,8 @@ int main(int argc, char **argv)
       " -language "          + l10n[val_lang][0] +
       " -screen-quality "    + quality[val_quality];
 
-    Fl::check();
-
-    if (argc > 1 && (STREQ(argv[1], "-verbose") || STREQ(argv[1], "--verbose")))
+    if (argc > 1 && (std::string(argv[1]) == "--verbose" ||
+                     std::string(argv[1]) == "-verbose"))
     {
       std::cout << "execute command: " << command << std::endl;
     }

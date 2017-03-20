@@ -1,11 +1,10 @@
 #!/bin/sh
 
-# sudo apt-get install libx11-dev libxft-dev libxcursor-dev libxext-dev libxfixes-dev libxinerama-dev cmake
+# sudo apt-get install libx11-dev libxft-dev libxext-dev cmake
 
 cd "${0%/*}"
 curdir="$PWD"
 
-CXX="$curdir/libcxx/libc++-wrapper"
 buildflags="-O2 -fstack-protector -ffunction-sections -fdata-sections -D_FORTIFY_SOURCE=2"
 
 set -v
@@ -20,8 +19,7 @@ cd fltk/build
 
 cmake .. -DCMAKE_BUILD_TYPE="None" \
   -DCMAKE_INSTALL_PREFIX="$curdir/fltk/build/usr" \
-  -DCMAKE_CXX_COMPILER="$CXX" \
-  -DCMAKE_CXX_FLAGS="$buildflags" \
+  -DCMAKE_CXX_FLAGS="-std=c++98 $buildflags" \
   -DCMAKE_C_FLAGS="$buildflags" \
   -DOPTION_USE_GL="OFF" \
   -DOPTION_OPTIM="" \
