@@ -8,3 +8,6 @@ I couldn't properly test the monitor selection as I don't have multiple screens 
 
 Build dependencies on Ubuntu 16.04 are:
 `git subversion cmake libx11-dev libxft-dev libxext-dev`
+
+Don't forget to checkout the FLTK sources with `git submodule init && git submodule update`
+
