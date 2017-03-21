@@ -2,16 +2,17 @@
 
 # sudo apt-get install libx11-dev libxft-dev libxext-dev cmake
 
-cd "${0%/*}"
-curdir="$PWD"
+set -e
+set -x
 
+cd "${0%/*}"
+
+curdir="$PWD"
 buildflags="-O2 -fstack-protector -ffunction-sections -fdata-sections -D_FORTIFY_SOURCE=2"
 
-set -v
-set -e
-
-if [ ! -d fltk ]; then
-  (git submodule init && git submodule update) || exit
+if [ ! -f fltk/CMakeLists.txt ]; then
+  git submodule init
+  git submodule update
 fi
 
 rm -rf fltk/build

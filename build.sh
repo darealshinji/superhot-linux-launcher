@@ -1,11 +1,12 @@
 #!/bin/sh
 
-LANG=C
-
-cflags="-Wall -O3 -fstack-protector -ffunction-sections -fdata-sections -DENABLE_BINRELOC -D_FORTIFY_SOURCE=2"
-
-set -v
 set -e
+set -x
+
+cd "${0%/*}"
+
+LANG=C
+cflags="-Wall -O3 -fstack-protector -ffunction-sections -fdata-sections -DENABLE_BINRELOC -D_FORTIFY_SOURCE=2"
 
 test -d fltk/build/usr/include || ./build-fltk.sh
 
