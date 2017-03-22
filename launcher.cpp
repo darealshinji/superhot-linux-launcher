@@ -41,15 +41,6 @@
 #include <cstdlib>
 #include <X11/Xlib.h>
 
-#define VENDOR "SUPERHOT team"
-
-#ifndef ENABLE_BINRELOC
-#  define ENABLE_BINRELOC
-#endif
-#include "binreloc.h"
-
-#define MAX_MONITORS 32
-
 #include <limits.h>
 #ifndef EXEEXT
 #  if (__WORDSIZE == 64)
@@ -59,11 +50,15 @@
 #  endif
 #endif
 
+#define VENDOR "SUPERHOT team"
+#define MAX_MONITORS 32
+
+#ifndef ENABLE_BINRELOC
+#  define ENABLE_BINRELOC
+#endif
+#include "binreloc.h"
+
 #include "resources.h"
-#define BGIMAGE      launcher_png
-#define BGIMAGE_LEN  launcher_png_len
-#define ICON         icon_png
-#define ICON_LEN     icon_png_len
 
 #ifndef WINDOW_DECORATION
 #  define WINDOW_DECORATION 0
@@ -322,7 +317,7 @@ int main(int argc, char **argv)
     monitor_items[i].labelcolor_ = 0;
   }
 
-  Fl_PNG_Image win_icon(NULL, ICON, (int) ICON_LEN);
+  Fl_PNG_Image win_icon(NULL, icon_png, (int) icon_png_len);
   Fl_Window::default_icon(&win_icon);
 
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
@@ -332,7 +327,7 @@ int main(int argc, char **argv)
   win->callback(close_cb);
   {
     Fl_Group *g        = new Fl_Group(0, 0, 400, 600);
-    Fl_PNG_Image *bg   = new Fl_PNG_Image(NULL, BGIMAGE, (int) BGIMAGE_LEN);
+    Fl_PNG_Image *bg   = new Fl_PNG_Image(NULL, launcher_png, (int) launcher_png_len);
     Fl_Tiled_Image *wp = new Fl_Tiled_Image(bg);
     g->image(wp);
     g->align(FL_ALIGN_INSIDE);
