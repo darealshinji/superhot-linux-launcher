@@ -66,7 +66,7 @@
 
 //#define DEBUG 1  /* makes boxes visible */
 #if (DEBUG == 1)
-#  define SETBOXTYPE(o)  o->box(FL_UP_BOX); o->color(FL_BLUE)
+#  define SETBOXTYPE(o)  o->box(FL_FLAT_BOX); o->color(FL_BLUE)
 #else
 #  define SETBOXTYPE(o)  o->box(FL_NO_BOX)
 #endif
@@ -323,7 +323,7 @@ int main(int argc, char **argv)
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
   Fl::background(200, 18, 0);
 
-  win = new Fl_Window(400, 600, "Launch Game");
+  win = new Fl_Window(400, 600, "Launch SUPERHOT");
   win->callback(close_cb);
   {
     Fl_Group *g        = new Fl_Group(0, 0, 400, 600);
@@ -343,17 +343,17 @@ int main(int argc, char **argv)
         o->callback(close_cb); }
       { uri_box *o = new uri_box(366, 10, 24, 24, "X");
         SETBOXTYPE(o);
-        o->labelcolor(fl_rgb_color(218, 96, 84));
+        o->labelcolor(fl_rgb_color(250, 115, 105));
         o->labelsize(30);
         o->labelfont(FL_HELVETICA_BOLD);
         o->clear_visible_focus(); }
 #endif
 
-      { Fl_Box *o = new Fl_Box(80, 142, 246, 26, "RESOLUTION");
+      { Fl_Box *o = new Fl_Box(83, 142, 246, 26, "RESOLUTION");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
-      { Fl_Menu_Button *o = resolution_selection = new Fl_Menu_Button(80, 146, 246, 26);
+      { Fl_Menu_Button *o = resolution_selection = new Fl_Menu_Button(83, 146, 246, 26);
         o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
         o->box(FL_THIN_DOWN_BOX);
         o->down_box(FL_THIN_DOWN_BOX);
@@ -366,7 +366,7 @@ int main(int argc, char **argv)
         o->label(selection_text[TEXT_RES].c_str());
         o->callback(resolution_selection_cb); }
 
-      { Fl_Check_Button *o = new Fl_Check_Button(78, 176, 110, 26, " WINDOWED");
+      { Fl_Check_Button *o = new Fl_Check_Button(81, 176, 110, 26, " WINDOWED");
         SETBOXTYPE(o);
         o->labelcolor(FL_WHITE);
         o->clear_visible_focus();
@@ -377,11 +377,11 @@ int main(int argc, char **argv)
         }
         o->callback(checkbutton_cb); }
 
-      { Fl_Box *o = new Fl_Box(80, 234, 246, 26, "SELECT MONITOR");
+      { Fl_Box *o = new Fl_Box(83, 234, 246, 26, "SELECT MONITOR");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
-      { Fl_Menu_Button *o = screen_selection = new Fl_Menu_Button(80, 238, 246, 26);
+      { Fl_Menu_Button *o = screen_selection = new Fl_Menu_Button(83, 238, 246, 26);
         o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
         o->box(FL_THIN_DOWN_BOX);
         o->down_box(FL_THIN_DOWN_BOX);
@@ -398,11 +398,11 @@ int main(int argc, char **argv)
         o->label(selection_text[TEXT_SCREEN].c_str());
         o->callback(screen_selection_cb); }
 
-      { Fl_Box *o = new Fl_Box(80, 300, 246, 26, "LANGUAGE");
+      { Fl_Box *o = new Fl_Box(83, 300, 246, 26, "LANGUAGE");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
-      { Fl_Menu_Button *o = language_selection = new Fl_Menu_Button(80, 304, 246, 26);
+      { Fl_Menu_Button *o = language_selection = new Fl_Menu_Button(83, 304, 246, 26);
         o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
         o->box(FL_THIN_DOWN_BOX);
         o->down_box(FL_THIN_DOWN_BOX);
@@ -415,16 +415,16 @@ int main(int argc, char **argv)
         o->label(selection_text[TEXT_LANG].c_str());
         o->callback(language_selection_cb); }
 
-      { Fl_Box *o = new Fl_Box(80, 368, 246, 26, "QUALITY");
+      { Fl_Box *o = new Fl_Box(83, 368, 246, 26, "QUALITY");
         o->align(FL_ALIGN_TOP_LEFT);
         o->box(FL_NO_BOX);
         o->labelcolor(FL_WHITE); }
       { Fl_Radio_Round_Button *o[2];
-        o[0] = new Fl_Radio_Round_Button(78, 370, 62, 26, " HIGH");
+        o[0] = new Fl_Radio_Round_Button(81, 370, 62, 26, " HIGH");
         o[0]->labelcolor(FL_WHITE);
         o[0]->clear_visible_focus();
         o[0]->callback(rb_callback, 0);
-        o[1] = new Fl_Radio_Round_Button(160, 370, 58, 26, " LOW");
+        o[1] = new Fl_Radio_Round_Button(165, 370, 58, 26, " LOW");
         o[1]->labelcolor(FL_WHITE);
         o[1]->clear_visible_focus();
         o[1]->callback(rb_callback, 1);
@@ -432,7 +432,7 @@ int main(int argc, char **argv)
         SETBOXTYPE(o[1]);
         o[val_quality]->setonly(); }
 
-      { Fl_Button *o = new Fl_Button(80, 434, 246, 50, "START SUPERHOT");
+      { Fl_Button *o = new Fl_Button(83, 434, 246, 50, "START SUPERHOT");
         o->align(FL_ALIGN_CENTER);
         o->box(FL_FLAT_BOX);
         o->down_box(FL_FLAT_BOX);
@@ -443,22 +443,31 @@ int main(int argc, char **argv)
         o->clear_visible_focus();
         o->callback(launch_cb); }
       { /* change cursor to FL_CURSOR_HAND above start button */
-        uri_box *o = new uri_box(80, 434, 246, 50);
+        uri_box *o = new uri_box(83, 434, 246, 50);
         o->box(FL_NO_BOX);
         o->clear_visible_focus(); }
 
-      { uri_box *o = new uri_box(77, 532, 29, 26);
+      { uri_box *o = new uri_box(83, 531, 29, 23);
         SETBOXTYPE(o);
+        o->tooltip("Twitter");
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://twitter.com/superhotthegame"); }
 
-      { uri_box *o = new uri_box(192, 530, 20, 30);
+      { uri_box *o = new uri_box(154, 530, 30, 30);
         SETBOXTYPE(o);
+        o->tooltip("Facebook");
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"https://www.facebook.com/superhotgame"); }
 
-      { uri_box *o = new uri_box(302, 534, 30, 22);
+      { uri_box *o = new uri_box(228, 531, 29, 29);
         SETBOXTYPE(o);
+        o->tooltip("Instagram");
+        o->clear_visible_focus();
+        o->callback(open_uri_cb, (void *)"https://www.instagram.com/superhotthegame/"); }
+
+      { uri_box *o = new uri_box(300, 535, 30, 22);
+        SETBOXTYPE(o);
+        o->tooltip("Mail");
         o->clear_visible_focus();
         o->callback(open_uri_cb, (void *)"mailto:people@superhotgame.com"); }
     }
