@@ -39,6 +39,7 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <libgen.h>
 #include <X11/Xlib.h>
 
 #include <limits.h>
@@ -276,14 +277,11 @@ int main(int argc, char **argv)
   {
     std::cerr << "*** BinReloc failed to initialize. Error: " << brError << std::endl;
   }
-  std::string aux     = std::string(argv[0]);
-  int pos             = aux.rfind('/');
-  std::string defPath = aux.substr(0, pos + 1);
-  std::string exe     = aux.substr(pos + 1);
-  char *exedir        = br_find_exe_dir(defPath.c_str());
+  char *exe = basename(argv[0]);
+  char *exedir = br_find_exe_dir(dirname(argv[0]));
 
   /* check configurations */
-  Fl_Preferences prefs(exedir, VENDOR, exe.c_str());
+  Fl_Preferences prefs(exedir, VENDOR, exe);
   GETPREFS("resolution", val_res, MAX_RES, MAX_RES);
   GETPREFS("fullscreen", is_fullscreen, 1, 1);
   GETPREFS("language", val_lang, default_lang(), MAX_LANG);
