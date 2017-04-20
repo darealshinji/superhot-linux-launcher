@@ -8,3 +8,5 @@ it IT Italiano
 cz CZ Čeština
 hu HU Magyar
 es SP Español
+sk SK Slovak
+ja JP 日本語

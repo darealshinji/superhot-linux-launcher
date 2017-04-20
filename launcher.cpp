@@ -520,6 +520,7 @@ int main(int argc, char **argv)
       std::cout << "execute command: " << command << std::endl;
     }
 
+    command += " ; echo \"exit code: $?\"";
     return system(command.c_str());
   }
 

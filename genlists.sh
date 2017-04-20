@@ -41,7 +41,7 @@ echo ""
 echo "const char *l10n[][2] = {"
 for n in `seq 1 $langCount`; do
   lang2=$(sed -n "${n}p" $langTxt | awk '{print $2}')
-  lang3=$(sed -n "$n s/^.\{6\}//p" $langTxt)
+  lang3=$(sed -n "${n}p" $langTxt | tail -c+7)
   printf "  { \"$lang2\", \"$lang3\" }"
   test $n -eq $langCount && echo "" || echo ","
 done
