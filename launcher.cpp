@@ -42,6 +42,7 @@
 #include <libgen.h>
 #include <X11/Xlib.h>
 
+/*
 #include <limits.h>
 #ifndef EXEEXT
 #  if (__WORDSIZE == 64)
@@ -50,6 +51,8 @@
 #    define EXEEXT "x86"
 #  endif
 #endif
+*/
+#define EXEEXT "x86_64"
 
 #define VENDOR "SUPERHOT team"
 #define MAX_MONITORS 32
