@@ -37,21 +37,21 @@ typedef enum {
 	/* Mangle symbol names to avoid symbol
 	 * collisions with other ELF objects.
 	 */
-	#define br_init             codn2306560905443_br_init
-	#define br_init_lib         codn2306560905443_br_init_lib
-	#define br_find_exe         codn2306560905443_br_find_exe
-	#define br_find_exe_dir     codn2306560905443_br_find_exe_dir
-	#define br_find_prefix      codn2306560905443_br_find_prefix
-	#define br_find_bin_dir     codn2306560905443_br_find_bin_dir
-	#define br_find_sbin_dir    codn2306560905443_br_find_sbin_dir
-	#define br_find_data_dir    codn2306560905443_br_find_data_dir
-	#define br_find_locale_dir  codn2306560905443_br_find_locale_dir
-	#define br_find_lib_dir     codn2306560905443_br_find_lib_dir
-	#define br_find_libexec_dir codn2306560905443_br_find_libexec_dir
-	#define br_find_etc_dir     codn2306560905443_br_find_etc_dir
-	#define br_strcat           codn2306560905443_br_strcat
-	#define br_build_path       codn2306560905443_br_build_path
-	#define br_dirname          codn2306560905443_br_dirname
+	#define br_init             shlaunch_br_init
+	#define br_init_lib         shlaunch_br_init_lib
+	#define br_find_exe         shlaunch_br_find_exe
+	#define br_find_exe_dir     shlaunch_br_find_exe_dir
+	#define br_find_prefix      shlaunch_br_find_prefix
+	#define br_find_bin_dir     shlaunch_br_find_bin_dir
+	#define br_find_sbin_dir    shlaunch_br_find_sbin_dir
+	#define br_find_data_dir    shlaunch_br_find_data_dir
+	#define br_find_locale_dir  shlaunch_br_find_locale_dir
+	#define br_find_lib_dir     shlaunch_br_find_lib_dir
+	#define br_find_libexec_dir shlaunch_br_find_libexec_dir
+	#define br_find_etc_dir     shlaunch_br_find_etc_dir
+	#define br_strcat           shlaunch_br_strcat
+	#define br_build_path       shlaunch_br_build_path
+	#define br_dirname          shlaunch_br_dirname
 #endif
 
 int   br_init             (BrInitError *error);
