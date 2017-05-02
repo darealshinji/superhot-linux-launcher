@@ -195,16 +195,6 @@ int get_number_of_screens()
   return val;
 }
 
-char *rpbase(char *self)
-{
-  return basename(realpath(self, NULL));
-}
-
-char *rpdir(char *self)
-{
-  return dirname(realpath(self, NULL));
-}
-
 static void open_uri_cb(Fl_Widget *, void *p)
 {
   const char *uri = (char *)p;
@@ -276,18 +266,12 @@ int main(int argc, char **argv)
 
   /* get exe full path */
   BrInitError brError;
-  char *exe, *exedir;
   if (!br_init(&brError))
   {
     std::cerr << "*** BinReloc failed to initialize. brError: " << brError << std::endl;
-    exe = rpbase(argv[0]);
-    exedir = rpdir(argv[0]);
   }
-  else
-  {
-    exe = basename(br_find_exe(rpbase(argv[0])));
-    exedir = br_find_exe_dir(rpdir(argv[0]));
-  }
+  char *exe = basename(br_find_exe(realpath(argv[0], NULL)));
+  char *exedir = br_find_exe_dir(dirname(realpath(argv[0], NULL)));
 
   /* check configurations */
   Fl_Preferences prefs(exedir, VENDOR, exe);
