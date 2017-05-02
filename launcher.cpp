@@ -161,12 +161,6 @@ enum {
   TEXT_LANG
 };
 
-struct resolutionData {
-  int w;
-  int h;
-  const char *l;
-};
-
 #include "menu_item_lists.h"
 
 
@@ -199,6 +193,16 @@ int get_number_of_screens()
     val = 1;
   }
   return val;
+}
+
+char *rpbase(char *self)
+{
+  return basename(realpath(self, NULL));
+}
+
+char *rpdir(char *self)
+{
+  return dirname(realpath(self, NULL));
 }
 
 static void open_uri_cb(Fl_Widget *, void *p)
@@ -265,20 +269,25 @@ int main(int argc, char **argv)
 {
   Fl_Menu_Item monitor_items[MAX_MONITORS];
   std::string monitor_entry[MAX_MONITORS];
-
-  BrInitError brError;
   int val_res, val_screen, screens_avail, is_fullscreen, val_lang;
 
   /* satisfying section 4 of the FLTK license's LGPL exception */
   std::cout << "using FLTK version " PRINT_VERSION " (http://www.fltk.org)" << std::endl;
 
   /* get exe full path */
+  BrInitError brError;
+  char *exe, *exedir;
   if (!br_init(&brError))
   {
-    std::cerr << "*** BinReloc failed to initialize. Error: " << brError << std::endl;
+    std::cerr << "*** BinReloc failed to initialize. brError: " << brError << std::endl;
+    exe = rpbase(argv[0]);
+    exedir = rpdir(argv[0]);
   }
-  char *exe = basename(argv[0]);
-  char *exedir = br_find_exe_dir(dirname(argv[0]));
+  else
+  {
+    exe = basename(br_find_exe(rpbase(argv[0])));
+    exedir = br_find_exe_dir(rpdir(argv[0]));
+  }
 
   /* check configurations */
   Fl_Preferences prefs(exedir, VENDOR, exe);
@@ -320,6 +329,12 @@ int main(int argc, char **argv)
 
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
   Fl::background(200, 18, 0);
+
+  if (getenv("LC_ALL") == NULL)
+  {
+    /* display the Japanese language entry correctly */
+    setenv("LC_ALL", "ja_JP", 1);
+  }
 
   win = new Fl_Window(400, 600, "Launch SUPERHOT");
   win->callback(close_cb);
@@ -509,9 +524,9 @@ int main(int argc, char **argv)
     std::string command = "'" + std::string(exedir) + "/SUPERHOT." EXEEXT + "'"
       " -adapter "           + itostr(val_screen) +
       " -screen-fullscreen " + itostr(is_fullscreen) +
-      " -screen-width "      + itostr(resolutions[val_res].w) +
-      " -screen-height "     + itostr(resolutions[val_res].h) +
-      " -language "          + l10n[val_lang][0] +
+      " -screen-width "      + resolutions[val_res][0] +
+      " -screen-height "     + resolutions[val_res][1] +
+      " -language "          + l10n[val_lang] +
       " -screen-quality "    + quality[val_quality];
 
     if (argc > 1 && (std::string(argv[1]) == "--verbose" ||

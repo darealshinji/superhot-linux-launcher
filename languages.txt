@@ -10,3 +10,4 @@ hu HU Magyar
 es SP Español
 sk SK Slovak
 ja JP 日本語
+

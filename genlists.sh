@@ -3,23 +3,30 @@
 fontSize=14
 
 resTxt="resolutions.txt"
-resCount=$(cat $resTxt | wc -l)
+langTxt="languages.txt"
+resCount=$(grep '^[A-Za-z0-9]' $resTxt | wc -l)
+langCount=$(grep '^[A-Za-z0-9]' $langTxt | wc -l)
+
+echo "/* automatically generated from $resTxt and $langTxt */"
+echo ""
 
 echo "#define MAX_RES $(($resCount - 1))"
 echo ""
-echo "struct resolutionData resolutions[] = {"
-for res in $(cat $resTxt) ; do
+echo "std::string resolutions[][2] = {"
+n=0
+for res in $(grep '^[A-Za-z0-9]' $resTxt) ; do
+  n=$(($n+1))
   w=$(echo $res | cut -d'x' -f1)
   h=$(echo $res | cut -d'x' -f2)
-  echo "  { $w, $h, \"$res\" },"
+  printf "  { \"$w\", \"$h\" }"
+  test $n -eq $resCount && echo "" || echo ", "
 done
-echo "  { 0, 0, 0 }"
 echo "};"
 echo ""
 
 echo "Fl_Menu_Item resolution_items[] = {"
-for n in `seq 1 $resCount`; do
-  echo "  { resolutions[$(($n - 1))].l, 0,0,0,0, FL_NORMAL_LABEL, 0,$fontSize,0 },"
+for res in $(grep '^[A-Za-z0-9]' $resTxt) ; do
+  echo "  { \"$res\", 0,0,0,0, FL_NORMAL_LABEL, 0,$fontSize,0 },"
 done
 echo "  { 0,0,0,0,0,0,0,0,0 }"
 echo "};"
@@ -27,31 +34,27 @@ echo ""
 echo ""
 
 
-langTxt="languages.txt"
-langCount=$(cat $langTxt | wc -l)
-
 echo "enum {"
 for n in `seq 1 $langCount`; do
-  echo "  $(sed -n "${n}p" $langTxt | awk '{print $2}') = $(($n - 1)),"
+  echo "  $(grep '^[A-Za-z0-9]' $langTxt | sed -n "${n}p" | awk '{print $2}') = $(($n - 1)),"
 done
 echo "  MAX_LANG = $langCount"
 echo "};"
 
 echo ""
-echo "const char *l10n[][2] = {"
+echo "std::string l10n[] = {"
+printf "  "
 for n in `seq 1 $langCount`; do
-  lang2=$(sed -n "${n}p" $langTxt | awk '{print $2}')
-  lang3=$(sed -n "${n}p" $langTxt | tail -c+7)
-  printf "  { \"$lang2\", \"$lang3\" }"
-  test $n -eq $langCount && echo "" || echo ","
+  printf "\"$(grep '^[A-Za-z0-9]' $langTxt | sed -n "${n}p" | awk '{print $2}')\""
+  test $n -eq $langCount && echo "" || printf ", "
 done
 echo "};"
 echo ""
 
 echo "Fl_Menu_Item language_items[] = {"
 for n in `seq 1 $langCount`; do
-  lang=$(sed -n "${n}p" $langTxt | awk '{print $2}')
-  echo "  { l10n[$lang][1], 0,0,0,0, FL_NORMAL_LABEL, 0,$fontSize,0 },"
+  lang=$(grep '^[A-Za-z0-9]' $langTxt | sed -n "${n}p" | tail -c+7)
+  echo "  { \"$lang\", 0,0,0,0, FL_NORMAL_LABEL, 0,$fontSize,0 },"
 done
 echo "  { 0,0,0,0,0,0,0,0,0 }"
 echo "};"
@@ -60,8 +63,8 @@ echo ""
 echo "#define CHECK_L10N \\"
 entry=0
 for n in `seq 1 $langCount`; do
-  lang1=$(sed -n "${n}p" $langTxt | awk '{print $1}')
-  lang2=$(sed -n "${n}p" $langTxt | awk '{print $2}')
+  lang1=$(grep '^[A-Za-z0-9]' $langTxt | sed -n "${n}p" | awk '{print $1}')
+  lang2=$(grep '^[A-Za-z0-9]' $langTxt | sed -n "${n}p" | awk '{print $2}')
   if [ "$lang1" != "en" ]; then
     entry=$(($entry + 1))
     if [ $entry -eq 1 ]; then
