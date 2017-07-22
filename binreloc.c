@@ -6,17 +6,34 @@
  * and/or modify it under the terms of the Do What The Fuck You Want
  * To Public License, Version 2, as published by Sam Hocevar. See
  * http://sam.zoy.org/wtfpl/COPYING for more details.
+ *
+ *
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *                    Version 2, December 2004
+ *
+ * Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ *
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ *
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ *
+ *  0. You just DO WHAT THE FUCK YOU WANT TO.
  */
 
-/* Source: https://github.com/limbahq/binreloc */
 
-#ifndef __BINRELOC_C__
-#define __BINRELOC_C__
+/* enable binreloc */
+//#define ENABLE_BINRELOC
+
+/* Build a test binary */
+//#define RUN_TEST
 
 #ifdef ENABLE_BINRELOC
-	#include <sys/types.h>
-	#include <sys/stat.h>
-	#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif /* ENABLE_BINRELOC */
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,11 +68,11 @@ _br_find_exe (BrInitError *error)
 	path = getexecname();
 	return strdup(path);
 #elif defined(__APPLE__) && defined(__MACH__)
-    char path[MAXPATHLEN+1];
-    uint32_t path_len = MAXPATHLEN;
-    // SPI first appeared in Mac OS X 10.2
-    _NSGetExecutablePath(path, &path_len);
-    return strdup(path);
+	char path[MAXPATHLEN+1];
+	uint32_t path_len = MAXPATHLEN;
+	// SPI first appeared in Mac OS X 10.2
+	_NSGetExecutablePath(path, &path_len);
+	return strdup(path);
 #else
 	char *path, *path2, *line, *result;
 	size_t buf_size;
@@ -125,37 +142,37 @@ _br_find_exe (BrInitError *error)
 
 #if defined(__FreeBSD__)
 {
-    char *name, *start, *end;
+	char *name, *start, *end;
 	char *buffer = NULL, *temp;
 	struct stat finfo;
 
 	name = (char*) getprogname();
-    start = end = getenv("PATH");
+	start = end = getenv("PATH");
 
-    while (*end) {
-	 end = strchr (start, ':');
-	 if (!end) end = strchr (start, '\0');
+	while (*end) {
+		end = strchr (start, ':');
+		if (!end) end = strchr (start, '\0');
 
-	 /* Resize `buffer' for path component, '/', name and a '\0' */
-	 temp = realloc (buffer, end - start + 1 + strlen (name) + 1);
-	 if (temp) {
-	    buffer = temp;
+		/* Resize `buffer' for path component, '/', name and a '\0' */
+		temp = realloc (buffer, end - start + 1 + strlen (name) + 1);
+		if (temp) {
+			buffer = temp;
 
-	    strncpy (buffer, start, end - start);
-	    *(buffer + (end - start)) = '/';
-	    strcpy (buffer + (end - start) + 1, name);
+			strncpy (buffer, start, end - start);
+			*(buffer + (end - start)) = '/';
+			strcpy (buffer + (end - start) + 1, name);
 
-	    if ((stat(buffer, &finfo)==0) && (!S_ISDIR (finfo.st_mode))) {
-	       path = strdup(buffer);
-	       free (buffer);
-	       return path;
-	    }
-	 } /* else... ignore the failure; `buffer' is still valid anyway. */
+			if ((stat(buffer, &finfo)==0) && (!S_ISDIR (finfo.st_mode))) {
+				path = strdup(buffer);
+				free (buffer);
+				return path;
+			}
+		} /* else... ignore the failure; `buffer' is still valid anyway. */
 
-	 start = end + 1;
-      }
-      /* Path search failed */
-      free (buffer);
+		start = end + 1;
+	}
+	/* Path search failed */
+	free (buffer);
 
 	if (error)
 		*error = BR_INIT_ERROR_DISABLED;
@@ -239,7 +256,7 @@ _br_find_exe_for_symbol (const void *symbol, BrInitError *error)
 		*error = BR_INIT_ERROR_DISABLED;
 	return (char *) NULL;
 #else
-	#define SIZE PATH_MAX + 100
+#define SIZE PATH_MAX + 100
 	FILE *f;
 	size_t address_string_len;
 	char *address_string, line[SIZE], *found;
@@ -350,8 +367,8 @@ _br_find_exe_for_symbol (const void *symbol, BrInitError *error)
 
 
 #ifndef BINRELOC_RUNNING_DOXYGEN
-	#undef NULL
-	#define NULL ((char *) 0) /* typecasted as char* for C++ type safeness */
+#undef NULL
+#define NULL ((char *) 0) /* typecasted as char* for C++ type safeness */
 #endif
 
 static char *exe = (char *) NULL;
@@ -841,8 +858,55 @@ br_dirname (const char *path)
 }
 
 
+#define MY_FREE(x) if (x != (char *) 0) free (x)
+
+#ifdef RUN_TEST
+int
+main ()
+{
+	BrInitError error;
+	char *exe, *exedir, *prefix, *bin, *sbin, *data, *locale, *lib, *libexec, *etc;
+
+	if (!br_init (&error))
+		printf ("*** BinReloc failed to initialize. Error: %d\n", error);
+
+	exe     = br_find_exe         ("default exe name");
+	exedir  = br_find_exe_dir     ("default exe dir name");
+	prefix  = br_find_prefix      ("default prefix");
+	bin     = br_find_bin_dir     ("default bin dir");
+	sbin    = br_find_sbin_dir    ("default sbin dir");
+	data    = br_find_data_dir    ("default data dir");
+	locale  = br_find_locale_dir  ("default locale dir");
+	lib     = br_find_lib_dir     ("default lib dir");
+	libexec = br_find_libexec_dir ("default libexec dir");
+	etc     = br_find_etc_dir     ("default etc dir");
+
+	printf ("Executable filename : %s\n", exe);
+	printf ("Executable directory: %s\n", exedir);
+	printf ("Prefix     : %s\n", prefix);
+	printf ("Bin dir    : %s\n", bin);
+	printf ("Sbin dir   : %s\n", sbin);
+	printf ("Data dir   : %s\n", data);
+	printf ("Locale dir : %s\n", locale);
+	printf ("Library dir: %s\n", lib);
+	printf ("Libexec dir: %s\n", libexec);
+	printf ("Etc dir    : %s\n", etc);
+
+	MY_FREE (exe);
+	MY_FREE (exedir);
+	MY_FREE (prefix);
+	MY_FREE (bin);
+	MY_FREE (sbin);
+	MY_FREE (data);
+	MY_FREE (locale);
+	MY_FREE (lib);
+	MY_FREE (libexec);
+	MY_FREE (etc);
+	return 0;
+}
+#endif /* RUN_TEST */
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __BINRELOC_C__ */

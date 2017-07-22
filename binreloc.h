@@ -6,12 +6,28 @@
  * and/or modify it under the terms of the Do What The Fuck You Want
  * To Public License, Version 2, as published by Sam Hocevar. See
  * http://sam.zoy.org/wtfpl/COPYING for more details.
+ *
+ *
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *                    Version 2, December 2004
+ *
+ * Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ *
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ *
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ *
+ *  0. You just DO WHAT THE FUCK YOU WANT TO.
  */
 
-/* Source: https://github.com/limbahq/binreloc */
+#ifndef BINRELOC_H
+#define BINRELOC_H
 
-#ifndef __BINRELOC_H__
-#define __BINRELOC_H__
+/* Mangle symbol names to avoid symbol collisions with other ELF objects */
+#define BINRELOC_MANGLE(sym)  sym##_shlaunch
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,25 +50,29 @@ typedef enum {
 
 
 #ifndef BINRELOC_RUNNING_DOXYGEN
-	/* Mangle symbol names to avoid symbol
-	 * collisions with other ELF objects.
-	 */
-	#define br_init             shlaunch_br_init
-	#define br_init_lib         shlaunch_br_init_lib
-	#define br_find_exe         shlaunch_br_find_exe
-	#define br_find_exe_dir     shlaunch_br_find_exe_dir
-	#define br_find_prefix      shlaunch_br_find_prefix
-	#define br_find_bin_dir     shlaunch_br_find_bin_dir
-	#define br_find_sbin_dir    shlaunch_br_find_sbin_dir
-	#define br_find_data_dir    shlaunch_br_find_data_dir
-	#define br_find_locale_dir  shlaunch_br_find_locale_dir
-	#define br_find_lib_dir     shlaunch_br_find_lib_dir
-	#define br_find_libexec_dir shlaunch_br_find_libexec_dir
-	#define br_find_etc_dir     shlaunch_br_find_etc_dir
-	#define br_strcat           shlaunch_br_strcat
-	#define br_build_path       shlaunch_br_build_path
-	#define br_dirname          shlaunch_br_dirname
+/* Mangle symbol names to avoid symbol
+ * collisions with other ELF objects.
+ */
+#ifndef BINRELOC_MANGLE
+#define BINRELOC_MANGLE(x)  x
+//#define BINRELOC_MANGLE(x)  x##_abcdefg123456
 #endif
+#define br_init             BINRELOC_MANGLE(br_init)
+#define br_init_lib         BINRELOC_MANGLE(br_init_lib)
+#define br_find_exe         BINRELOC_MANGLE(br_find_exe)
+#define br_find_exe_dir     BINRELOC_MANGLE(br_find_exe_dir)
+#define br_find_prefix      BINRELOC_MANGLE(br_find_prefix)
+#define br_find_bin_dir     BINRELOC_MANGLE(br_find_bin_dir)
+#define br_find_sbin_dir    BINRELOC_MANGLE(br_find_sbin_dir)
+#define br_find_data_dir    BINRELOC_MANGLE(br_find_data_dir)
+#define br_find_locale_dir  BINRELOC_MANGLE(br_find_locale_dir)
+#define br_find_lib_dir     BINRELOC_MANGLE(br_find_lib_dir)
+#define br_find_libexec_dir BINRELOC_MANGLE(br_find_libexec_dir)
+#define br_find_etc_dir     BINRELOC_MANGLE(br_find_etc_dir)
+#define br_strcat           BINRELOC_MANGLE(br_strcat)
+#define br_build_path       BINRELOC_MANGLE(br_build_path)
+#define br_dirname          BINRELOC_MANGLE(br_dirname)
+#endif /* BINRELOC_RUNNING_DOXYGEN */
 
 int   br_init             (BrInitError *error);
 int   br_init_lib         (BrInitError *error);
@@ -78,4 +98,4 @@ char *br_dirname (const char *path);
 }
 #endif /* __cplusplus */
 
-#endif /* __BINRELOC_H__ */
+#endif /* BINRELOC_H */
