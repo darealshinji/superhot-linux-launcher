@@ -19,8 +19,6 @@ cd ..
 
 fltk_version="$(echo `cat fltk/VERSION`)"
 
-gcc $cflags -c -o binreloc.o binreloc.c
-
 # uncomment to enable decorations by the window manager
 #cflags="$cflags -DWINDOW_DECORATION=1"
 
@@ -32,7 +30,7 @@ g++ -std=c++98 $cflags \
   `./fltk/build/fltk-config --cflags --use-images | tr ' ' '\n' | grep '^-D'` \
   -c -o launcher.o launcher.cpp
 
-g++ -o launcher launcher.o binreloc.o \
+g++ -o launcher launcher.o \
   -Wl,--as-needed -Wl,--gc-sections -Wl,-z,defs -Wl,-z,relro \
   `./fltk/build/fltk-config --ldflags --use-images | sed 's/-lpng//g; s/-lz//g; s/-lfltk_images/-lfltk_images -lfltk_png -lfltk_z/'`
 

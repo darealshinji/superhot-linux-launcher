@@ -30,14 +30,14 @@
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_Preferences.H>
 #include <FL/Fl_Radio_Round_Button.H>
-#include <FL/Fl_Tiled_Image.H>
-#include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
 #include <FL/fl_draw.H>
 #include <FL/filename.H>
 
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cerrno>
 #include <cstdlib>
 #include <libgen.h>
 #include <X11/Xlib.h>
@@ -56,11 +56,6 @@
 
 #define VENDOR "SUPERHOT team"
 #define MAX_MONITORS 32
-
-#ifndef ENABLE_BINRELOC
-#  define ENABLE_BINRELOC
-#endif
-#include "binreloc.h"
 
 #include "resources.h"
 
@@ -151,7 +146,7 @@ int move_box::handle(int event)
 #endif
 
 
-Fl_Window *win;
+Fl_Double_Window *win;
 Fl_Menu_Button *resolution_selection, *screen_selection, *language_selection;
 bool checkbutton_set;
 bool launch_game = false;
@@ -268,16 +263,24 @@ int main(int argc, char **argv)
   std::cout << "using FLTK version " PRINT_VERSION " (http://www.fltk.org)" << std::endl;
 
   /* get exe full path */
-  BrInitError brError;
-  if (!br_init(&brError))
+  std::string exe, exedir;
+  char *rp = realpath("/proc/self/exe", NULL);
+  int errsv = errno;
+  if (rp)
   {
-    std::cerr << "*** BinReloc failed to initialize. brError: " << brError << std::endl;
+    std::string _rp(rp);
+    exe = std::string(basename((char *)_rp.c_str()));
+    exedir = std::string(dirname((char *)_rp.c_str()));
+    free(rp);
   }
-  char *exe = basename(br_find_exe(realpath(argv[0], NULL)));
-  char *exedir = br_find_exe_dir(dirname(realpath(argv[0], NULL)));
+  else
+  {
+    std::cerr << strerror(errsv) << std::endl;
+    return 1;
+  }
 
   /* check configurations */
-  Fl_Preferences prefs(exedir, VENDOR, exe);
+  Fl_Preferences prefs(exedir.c_str(), VENDOR, exe.c_str());
   GETPREFS("resolution", val_res, MAX_RES, MAX_RES);
   GETPREFS("fullscreen", is_fullscreen, 1, 1);
   GETPREFS("language", val_lang, default_lang(), MAX_LANG);
@@ -312,7 +315,7 @@ int main(int argc, char **argv)
   }
 
   Fl_PNG_Image win_icon(NULL, icon_png, (int) icon_png_len);
-  Fl_Window::default_icon(&win_icon);
+  Fl_Double_Window::default_icon(&win_icon);
 
   Fl_Color selection_color = fl_rgb_color(200, 18, 0);
   Fl::background(200, 18, 0);
@@ -323,13 +326,11 @@ int main(int argc, char **argv)
     setenv("LC_ALL", "ja_JP", 1);
   }
 
-  win = new Fl_Window(400, 600, "Launch SUPERHOT");
+  win = new Fl_Double_Window(400, 600, "Launch SUPERHOT");
   win->callback(close_cb);
   {
-    Fl_Group *g        = new Fl_Group(0, 0, 400, 600);
-    Fl_PNG_Image *bg   = new Fl_PNG_Image(NULL, launcher_png, (int) launcher_png_len);
-    Fl_Tiled_Image *wp = new Fl_Tiled_Image(bg);
-    g->image(wp);
+    Fl_Group *g = new Fl_Group(0, 0, 400, 600);
+    g->image(new Fl_PNG_Image(NULL, launcher_png, (int) launcher_png_len));
     g->align(FL_ALIGN_INSIDE);
     {
 #if (WINDOW_DECORATION == 0)
