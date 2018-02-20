@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-#define SHMCD_VERSION "ALPHA 2.0.1m"
-
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Box.H>
@@ -49,6 +47,7 @@
 #include "common.cpp"
 #include "background.h"
 #include "images.h"
+#include "version.h"
 
 class mouse_over_button : public Fl_Button
 {
