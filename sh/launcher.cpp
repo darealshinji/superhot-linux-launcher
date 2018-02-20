@@ -43,18 +43,45 @@
 #include <string.h>
 #include <unistd.h>
 
-#define LABELSIZE 13
-#define MAX_SCREENS 16
-#define RES_COUNT 21
-#define WIN_W 400
-#define WIN_H 600
+#include "common.cpp"
+#include "images.h"
 
-enum {
-  EN = 0, PL = 1, FR = 2, DE = 3, RU = 4, PT = 5, IT = 6,
-  CZ = 7, HU = 8, SP = 9, SK = 10, JP = 11, MAX_LANG = 12
+class mouse_over_box : public Fl_Button
+{
+public:
+  mouse_over_box(int X, int Y, int W, int H, const char *L=0)
+   : Fl_Button(X, Y, W, H, L),
+     mouse_over_image(0)
+  { }
+
+  virtual ~mouse_over_box() { }
+
+  Fl_Image *mouse_over_image;
+
+  int handle(int event) {
+    int ret = Fl_Button::handle(event);
+    switch (event) {
+      case FL_ENTER:
+        fl_cursor(FL_CURSOR_HAND);
+        image(mouse_over_image);
+        parent()->redraw();
+        break;
+      case FL_LEAVE:
+        fl_cursor(FL_CURSOR_DEFAULT);
+        image(0);
+        parent()->redraw();
+        break;
+    }
+    return ret;
+  }
 };
 
-std::string languages[][2] = {
+enum {
+  EN = 0,
+  MAX_LANG = 12
+};
+
+std::string languages[MAX_LANG][2] = {
   { "English", "EN" },
   { "Polski", "PL" },
   { "Français", "FR" },
@@ -69,52 +96,31 @@ std::string languages[][2] = {
   { "日本語", "JA" }
 };
 
-Fl_Double_Window *win;
 Fl_Menu_Item resolution_items[RES_COUNT + 1];
 Fl_Menu_Item screen_items[MAX_SCREENS];
 Fl_Menu_Item language_items[MAX_LANG + 1];
 Fl_Menu_Button *resolution_selection, *screen_selection, *language_selection;
-Fl_Button *windowed_button;
 int prev_selection_res, prev_selection_screen, prev_selection_lang;
-bool launch_game = false, windowed = false;
+bool launch_game = false;
 
-#include "common.cpp"
-#include "images.h"
-
-int default_lang(void) {
+int default_lang(void)
+{
   char *l = getenv("LANG");
 
   if (!l) {
     l = getenv("LANGUAGE");
   }
 
-  if (!l || strlen(l) < 2 || strncmp(l, "en", 2) == 0) {
-    return EN;
-  } else if (strncmp(l, "pl", 2) == 0) {
-    return PL;
-  } else if (strncmp(l, "fr", 2) == 0) {
-    return FR;
-  } else if (strncmp(l, "de", 2) == 0) {
-    return DE;
-  } else if (strncmp(l, "ru", 2) == 0) {
-    return RU;
-  } else if (strncmp(l, "pt", 2) == 0) {
-    return PT;
-  } else if (strncmp(l, "it", 2) == 0) {
-    return IT;
-  } else if (strncmp(l, "cz", 2) == 0) {
-    return CZ;
-  } else if (strncmp(l, "hu", 2) == 0) {
-    return HU;
-  } else if (strncmp(l, "es", 2) == 0) {
-    return SP;
-  } else if (strncmp(l, "sk", 2) == 0) {
-    return SK;
-  } else if (strncmp(l, "ja", 2) == 0) {
-    return JP;
-  } else {
+  if (!l || strlen(l) < 2) {
     return EN;
   }
+
+  for (int i = 0; i < MAX_LANG; i++) {
+    if (strncasecmp(l, languages[i][1].c_str(), 2) == 0) {
+      return i;
+    }
+  }
+  return EN;
 }
 
 void resolution_selection_cb(Fl_Widget *, void *) {
@@ -192,20 +198,19 @@ int main(void)
   Fl_Double_Window::default_icon(&image_icon_128);
   Fl::background(0,0,0);
 
-  win = new Fl_Double_Window(WIN_W, WIN_H, "SUPERHOT: MIND CONTROL DELETE");
+  win = new Fl_Double_Window(400, 600, "SUPERHOT: MIND CONTROL DELETE");
   {
-    { move_box *o = new move_box(0,0, WIN_W, WIN_H);
+    { move_box *o = new move_box(0,0, 400, 600);
       o->align(FL_ALIGN_INSIDE);
       o->image(&image_window); }
 
     /* resolution */
-    MENU_BUTTON(resolution_selection, 80, 186, resolution_items, val_res, resolution_selection_cb)
+    MENU_BUTTON(resolution_selection, 80, 186, 245, 26, resolution_items, val_res, resolution_selection_cb)
 
     /* windowed */
-    { Fl_Button *o = windowed_button = new Fl_Button(80, 219, 92, 19);
+    { Fl_Button *o = new Fl_Button(80, 219, 92, 18);
       o->box(FL_NO_BOX);
       o->down_box(FL_NO_BOX);
-      o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT);
       if (windowed) {
         o->image(&image_check);
       } else {
@@ -215,10 +220,10 @@ int main(void)
       o->callback(checkbutton_cb, &image_check); }
 
     /* screen */
-    MENU_BUTTON(screen_selection, 80, 278, screen_items, val_screen, screen_selection_cb)
+    MENU_BUTTON(screen_selection, 80, 278, 245, 26, screen_items, val_screen, screen_selection_cb)
 
     /* language */
-    MENU_BUTTON(language_selection, 80, 344, language_items, val_lang, language_selection_cb)
+    MENU_BUTTON(language_selection, 80, 344, 245, 26, language_items, val_lang, language_selection_cb)
 
     const char *facebook_url = "https://www.facebook.com/dialog/feed?app_id=891295770968742&link=http%3A%2F%2Fsuperhotgame.com&redirect_uri=http%3A%2F%2Fsuperhotgame.com&caption=About%20to%20play%20%23SUPERHOT!%20So%20excited!&display=popup";
     const char *twitter_url  = "https://twitter.com/intent/tweet?text=About%20to%20play%20%23SUPERHOT%21%20So%20excited%21&via=superhotthegame&url=http%3A%2F%2Fsuperhotgame.com&original_referer=";
@@ -228,7 +233,7 @@ int main(void)
     BUTTON(130, 490, 30, 31, open_uri_cb, facebook_url, image_facebook)
     BUTTON(240, 490, 30, 31, open_uri_cb, twitter_url, image_twitter)
   }
-  win->position((Fl::w() - WIN_W) / 2, (Fl::h() - WIN_H) / 2);
+  win->position((Fl::w() - 400) / 2, (Fl::h() - 600) / 2);
   win->end();
   win->show();
   win->border(0);

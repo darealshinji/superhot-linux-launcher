@@ -22,28 +22,16 @@
  * SOFTWARE.
  */
 
+#define LABELSIZE 13
+#define MAX_SCREENS 16
+#define RES_COUNT 21
+
 #define PNG(x) \
   Fl_PNG_Image image_##x(NULL, x##_png, (int)x##_png_len);
 
 #define GETPREFS(entry, value, default, max) \
   prefs.get(entry, value, -1); \
   if (value < 0 || value > max) { value = default; }
-
-#define MENU_BUTTON(PTR,X,Y,ITEMS,VAL,CB) \
-  { Fl_Menu_Button *o = PTR = new Fl_Menu_Button(X, Y, 245, 26); \
-    o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT); \
-    o->box(FL_THIN_DOWN_BOX); \
-    o->down_box(FL_THIN_DOWN_BOX); \
-    o->color(FL_WHITE); \
-    o->selection_color(selection_color); \
-    o->menu(ITEMS); \
-    o->value(VAL); \
-    ITEMS[VAL].labelfont_ = FL_BOLD; \
-    std::string s = " " + std::string(o->text()); \
-    o->copy_label(s.c_str()); \
-    o->labelsize(LABELSIZE); \
-    o->clear_visible_focus(); \
-    o->callback(CB); }
 
 #define BUTTON(X,Y,W,H,CB_A,CB_B,IMG) \
     { mouse_over_box *o = new mouse_over_box(X, Y, W, H); \
@@ -52,6 +40,32 @@
       o->mouse_over_image = &IMG; \
       o->callback(CB_A, (void *)CB_B); \
       o->clear_visible_focus(); }
+
+#define MENU_BUTTON(PTR,X,Y,W,H,ITEMS,VAL,CB) \
+  { Fl_Menu_Button *o = PTR = new Fl_Menu_Button(X, Y, W, H); \
+    o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT); \
+    o->box(FL_THIN_DOWN_BOX); \
+    o->down_box(FL_THIN_DOWN_BOX); \
+    o->color(FL_WHITE); \
+    o->selection_color(selection_color); \
+    o->menu(ITEMS); \
+    o->value(VAL); \
+    ITEMS[VAL].labelfont_ += FL_BOLD; \
+    std::string s = " " + std::string(o->text()); \
+    o->copy_label(s.c_str()); \
+    o->labelsize(LABELSIZE); \
+    o->clear_visible_focus(); \
+    o->callback(CB); }
+
+#define URL_BUTTON(X,Y,NAME) \
+  { mouse_over_button *o = new mouse_over_button(X, Y, 30, 30); \
+    o->box(FL_NO_BOX); \
+    o->down_box(FL_NO_BOX); \
+    o->image(&image_##NAME##_g); \
+    o->default_image = &image_##NAME##_g; \
+    o->mouse_over_image = &image_##NAME##_w; \
+    o->callback(open_uri_cb, (void *)NAME##_url); \
+    o->clear_visible_focus(); }
 
 class move_box : public Fl_Box
 {
@@ -87,35 +101,8 @@ public:
   }
 };
 
-class mouse_over_box : public Fl_Button
-{
-public:
-  mouse_over_box(int X, int Y, int W, int H, const char *L=0)
-   : Fl_Button(X, Y, W, H, L),
-     mouse_over_image(0)
-  { }
-
-  virtual ~mouse_over_box() { }
-
-  Fl_Image *mouse_over_image;
-
-  int handle(int event) {
-    int ret = Fl_Button::handle(event);
-    switch (event) {
-      case FL_ENTER:
-        fl_cursor(FL_CURSOR_HAND);
-        image(mouse_over_image);
-        parent()->redraw();
-        break;
-      case FL_LEAVE:
-        fl_cursor(FL_CURSOR_DEFAULT);
-        image(0);
-        parent()->redraw();
-        break;
-    }
-    return ret;
-  }
-};
+Fl_Double_Window *win;
+bool windowed = false;
 
 std::string resolutions[][2] = {
   {  "640",  "480" },
@@ -160,22 +147,23 @@ void selection_callback(int *prev, Fl_Menu_Button *b, Fl_Menu_Item *it)
   if (*prev != b->value()) {
     std::string s = " " + std::string(b->text());
     b->copy_label(s.c_str());
-    it[b->value()].labelfont_ = FL_BOLD;
-    it[*prev].labelfont_ = 0;
+    it[b->value()].labelfont_ += FL_BOLD;
+    it[*prev].labelfont_ -= FL_BOLD;
     *prev = b->value();
   }
 }
 
-void checkbutton_cb(Fl_Widget *, void *v)
+void checkbutton_cb(Fl_Widget *o, void *v)
 {
   Fl_Image *img = (Fl_Image *)v;
+  Fl_Button *b = (Fl_Button *)o;
 
   if (windowed) {
     windowed = false;
-    windowed_button->image(0);
+    b->image(0);
   } else {
     windowed = true;
-    windowed_button->image(img);
+    b->image(img);
   }
   win->redraw();
 }

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg1306"
+   height="18"
+   width="92"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="check.svg"
+   inkscape:export-filename="check.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1020"
+     id="namedview25"
+     showgrid="false"
+     inkscape:zoom="6.9532167"
+     inkscape:cx="50.662749"
+     inkscape:cy="-3.6919803"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1306" />
+  <defs
+     id="defs1308">
+    <radialGradient
+       id="radialGradient3976"
+       gradientUnits="userSpaceOnUse"
+       cy="40"
+       cx="23.857"
+       gradientTransform="matrix(1,0,0,0.5,0,20)"
+       r="17.143">
+      <stop
+         id="stop4128"
+         offset="0" />
+      <stop
+         id="stop4130"
+         stop-opacity="0"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient3980"
+       y2="-8.5627003"
+       gradientUnits="userSpaceOnUse"
+       x2="20.065001"
+       y1="53.835999"
+       x1="43.936001">
+      <stop
+         id="stop2481"
+         stop-color="#ffe69b"
+         offset="0" />
+      <stop
+         id="stop2483"
+         stop-color="#fff"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3982"
+       y2="15.815"
+       gradientUnits="userSpaceOnUse"
+       x2="20.917"
+       gradientTransform="matrix(1.003,0,0,1.003,-0.071859,0.019684)"
+       y1="33.955002"
+       x1="21.993999">
+      <stop
+         id="stop3959"
+         stop-color="#fffeff"
+         stop-opacity=".33333"
+         offset="0" />
+      <stop
+         id="stop3961"
+         stop-color="#fffeff"
+         stop-opacity=".21569"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata1311">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Rodney Dawes</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Jakub Steiner, Garrett LeSage</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <cc:license
+           rdf:resource="https://en.wikipedia.org/wiki/en:public_domain" />
+        <dc:title></dc:title>
+        <dc:source>https://commons.wikimedia.org/wiki/File:Dialog-accept.svg</dc:source>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title />
+          </cc:Agent>
+        </dc:rights>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer3"
+     style="fill:#ff0000;stroke:#ff0000;stroke-opacity:1"
+     transform="matrix(0.37476662,0,0,0.37476662,0.34029952,0.38029279)">
+    <g
+       id="text4967"
+       style="fill:#ff0000;stroke:#ff0000;stroke-opacity:1">
+      <path
+         id="path4984"
+         style="fill:#ff0000;stroke:#ff0000;stroke-opacity:1"
+         d="m 14.707,25.178 c 0.62921,1.5e-5 1.1052,0.5163 1.4278,1.5489 0.64534,1.9361 1.1052,2.9041 1.3794,2.9041 0.20973,1.2e-5 0.42753,-0.16133 0.65342,-0.48402 4.5336,-7.2602 8.7284,-13.133 12.584,-17.618 1.0003,-1.1616 2.5895,-1.7424 4.7676,-1.7425 0.51625,3.13e-5 0.86313,0.048433 1.0406,0.1452 0.17744,0.096834 0.26618,0.21784 0.26621,0.36301 -3.3e-5,0.2259 -0.26624,0.66959 -0.79863,1.331 -6.2277,7.4861 -12.004,15.392 -17.328,23.717 -0.37109,0.58082 -1.1294,0.87124 -2.2749,0.87123 -1.1617,5e-6 -1.8473,-0.0484 -2.0571,-0.1452 -0.54856,-0.242 -1.1939,-1.4762 -1.9361,-3.7027 -0.83897,-2.4685 -1.2585,-4.0173 -1.2584,-4.6466 -8e-6,-0.67761 0.56468,-1.331 1.6941,-1.9603 0.69375,-0.3872 1.3068,-0.5808 1.8393,-0.58082"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>

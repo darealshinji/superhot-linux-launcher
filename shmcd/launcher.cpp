@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+#define SHMCD_VERSION "ALPHA 2.0.1m"
+
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Box.H>
@@ -30,6 +32,7 @@
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_PNG_Image.H>
+#include <FL/Fl_JPEG_Image.H>
 #include <FL/fl_draw.H>
 #include <FL/filename.H>
 #include <FL/x.H>
@@ -43,21 +46,58 @@
 #include <string.h>
 #include <unistd.h>
 
-#define LABELSIZE 13
-#define MAX_SCREENS 16
-#define RES_COUNT 21
-#define WIN_W 1020
-#define WIN_H 560
+#include "common.cpp"
+#include "background.h"
+#include "images.h"
 
-Fl_Double_Window *win;
+class mouse_over_button : public Fl_Button
+{
+public:
+  mouse_over_button(int X, int Y, int W, int H, const char *L=0)
+   : Fl_Button(X, Y, W, H, L),
+     default_color(0),
+     default_labelcolor(0),
+     mouse_over_color(0),
+     mouse_over_labelcolor(0),
+     default_image(0),
+     mouse_over_image(0)
+  { }
+
+  virtual ~mouse_over_button() { }
+
+  Fl_Color default_color;
+  Fl_Color default_labelcolor;
+  Fl_Color mouse_over_color;
+  Fl_Color mouse_over_labelcolor;
+  Fl_Image *default_image;
+  Fl_Image *mouse_over_image;
+
+  int handle(int event) {
+    int ret = Fl_Button::handle(event);
+    switch (event) {
+      case FL_ENTER:
+        fl_cursor(FL_CURSOR_HAND);
+        color(mouse_over_color);
+        labelcolor(mouse_over_labelcolor);
+        image(mouse_over_image);
+        parent()->redraw();
+        break;
+      case FL_LEAVE:
+        fl_cursor(FL_CURSOR_DEFAULT);
+        color(default_color);
+        labelcolor(default_labelcolor);
+        image(default_image);
+        parent()->redraw();
+        break;
+    }
+    return ret;
+  }
+};
+
 Fl_Menu_Item resolution_items[RES_COUNT + 1], screen_items[MAX_SCREENS];
 Fl_Menu_Button *resolution_selection, *screen_selection;
-Fl_Button *windowed_button;
 int prev_selection_res, prev_selection_screen;
-bool launch_game = false, windowed = false;
-
-#include "common.cpp"
-#include "images.h"
+bool launch_game = false;
 
 void resolution_selection_cb(Fl_Widget *, void *) {
   selection_callback(&prev_selection_res, resolution_selection, resolution_items);
@@ -121,26 +161,41 @@ int main(void)
   Fl_Double_Window::default_icon(&image_icon_128);
   Fl::background(0,0,0);
 
-  win = new Fl_Double_Window(WIN_W, WIN_H, "SUPERHOT: MIND CONTROL DELETE");
+  win = new Fl_Double_Window(1020, 560, "SUPERHOT: MIND CONTROL DELETE");
   {
-    { move_box *o = new move_box(0,0, WIN_W, WIN_H);
+    { move_box *o = new move_box(0,0, 1020, 560);
       o->align(FL_ALIGN_INSIDE);
-      o->image(&image_window); }
+      o->image(new Fl_JPEG_Image(NULL, shmcd_background_jpg)); }
 
-    { Fl_Box *o = new Fl_Box(0, 510, 260, 50);
-      o->image(&image_version); }
-
-    { Fl_Box *o = new Fl_Box(728, 362, 292, 198);
-      o->image(&image_links_area); }
-
-    /* resolution */
-    MENU_BUTTON(resolution_selection, 728, 138, resolution_items, val_res, resolution_selection_cb)
-
-    /* windowed */
-    { Fl_Button *o = windowed_button = new Fl_Button(728, 170, 94, 23);
+    /* close button */
+    { mouse_over_button *o = new mouse_over_button(957, 10, 24, 24, "×");
       o->box(FL_NO_BOX);
       o->down_box(FL_NO_BOX);
+      o->labelfont(FL_HELVETICA_BOLD);
+      o->labelcolor(fl_rgb_color(180));
+      o->default_labelcolor = o->labelcolor();
+      o->mouse_over_labelcolor = FL_WHITE;
+      o->labelsize(30);
+      o->callback(close_cb);
+      o->clear_visible_focus(); }
+
+    /* resolution */
+    { Fl_Box *o = new Fl_Box(728, 128, 1, 1, "RESOLUTION");
       o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT);
+      o->labelcolor(FL_WHITE);
+      o->labelsize(LABELSIZE); }
+    MENU_BUTTON(resolution_selection, 728, 138, 249, 26, resolution_items, val_res, resolution_selection_cb)
+
+    /* windowed */
+    { Fl_Box *o = new Fl_Box(728, 171, 18, 18, " WINDOWED");
+      o->box(FL_FLAT_BOX);
+      o->color(FL_WHITE);
+      o->align(FL_ALIGN_RIGHT);
+      o->labelcolor(FL_WHITE);
+      o->labelsize(LABELSIZE); }
+    { Fl_Button *o = new Fl_Button(728, 171, 104, 18);
+      o->box(FL_NO_BOX);
+      o->down_box(FL_NO_BOX);
       if (windowed) {
         o->image(&image_check);
       } else {
@@ -150,7 +205,35 @@ int main(void)
       o->callback(checkbutton_cb, &image_check); }
 
     /* screen */
-    MENU_BUTTON(screen_selection, 728, 245, screen_items, val_screen, screen_selection_cb)
+    { Fl_Box *o = new Fl_Box(728, 235, 1, 1, "SELECT MONITOR");
+      o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT);
+      o->labelcolor(FL_WHITE);
+      o->labelsize(LABELSIZE); }
+    MENU_BUTTON(screen_selection, 728, 245, 249, 26, screen_items, val_screen, screen_selection_cb)
+
+    /* start game */
+    { mouse_over_button *o = new mouse_over_button(728, 287, 249, 51, "START GAME");
+      o->box(FL_FLAT_BOX);
+      o->down_box(FL_FLAT_BOX);
+      o->labelcolor(FL_WHITE);
+      o->default_labelcolor = FL_WHITE;
+      o->mouse_over_labelcolor = FL_WHITE;
+      o->color(fl_rgb_color(25, 23, 24));
+      o->down_color(fl_rgb_color(93, 0, 0));
+      o->default_color = o->color();
+      o->mouse_over_color = o->down_color();
+      o->callback(start_cb);
+      o->clear_visible_focus(); }
+
+    { Fl_Box *o = new Fl_Box(728, 368, 249, 51, "JOIN THE DISCUSSION\n\nAND HELP SHAPE THE GAME");
+      o->align(FL_ALIGN_CENTER);
+      o->labelcolor(FL_WHITE);
+      o->labelsize(LABELSIZE-2); }
+
+    { Fl_Box *o = new Fl_Box(6, 514, 1, 1, "MIND CONTROL DELETE IS IN EARLY ACCESS\n\nSHMCD " SHMCD_VERSION);
+      o->align(FL_ALIGN_RIGHT_TOP);
+      o->labelcolor(fl_rgb_color(113));
+      o->labelsize(LABELSIZE-3); }
 
     const char *facebook_url = "https://www.facebook.com/dialog/feed?app_id=891295770968742&link=http%3A%2F%2Fsuperhotgame.com/mcd/&redirect_uri=https://superhotgame.com/mcd/&caption=About%20to%20play%20%23SUPERHOT!%20So%20excited!&display=popup";
     const char *twitter_url  = "https://twitter.com/share?url=http://superhot___mind_control_delete.trbt.it/launcher/twitter&text=About%20to%20play%20%23MINDCONTROLDELETE!%20So%20excited!&via=superhotthegame";
@@ -160,17 +243,15 @@ int main(void)
     const char *twitch_url   = "https://www.twitch.tv/superhotthegame";
     const char *caffeine_url = "https://www.caffeine.tv/superhotthegame/profile";
 
-    BUTTON(958, 12, 23, 23, close_cb, NULL, image_close)
-    BUTTON(728, 287, 249, 51, start_cb, &launch_game, image_start)
-    BUTTON(760, 439, 30, 31, open_uri_cb, facebook_url, image_facebook)
-    BUTTON(810, 439, 30, 31, open_uri_cb, twitter_url, image_twitter)
-    BUTTON(860, 439, 30, 31, open_uri_cb, reddit_url, image_reddit)
-    BUTTON(910, 439, 30, 31, open_uri_cb, feedback_url, image_feedback)
-    BUTTON(785, 486, 30, 31, open_uri_cb, discord_url, image_discord)
-    BUTTON(835, 486, 30, 31, open_uri_cb, twitch_url, image_twitch)
-    BUTTON(885, 486, 30, 31, open_uri_cb, caffeine_url, image_caffeine)
+    URL_BUTTON(760, 439, facebook)
+    URL_BUTTON(810, 439, twitter)
+    URL_BUTTON(860, 439, reddit)
+    URL_BUTTON(910, 439, feedback)
+    URL_BUTTON(785, 486, discord)
+    URL_BUTTON(835, 486, twitch)
+    URL_BUTTON(885, 486, caffeine)
   }
-  win->position((Fl::w() - WIN_W) / 2, (Fl::h() - WIN_H) / 2);
+  win->position((Fl::w() - 1020) / 2, (Fl::h() - 560) / 2);
   win->end();
   win->show();
   win->border(0);

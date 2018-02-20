@@ -22,6 +22,6 @@ g++ -std=c++11 $cflags \
 
 g++ -o launcher launcher.o \
   -Wl,--as-needed -Wl,--gc-sections -Wl,-z,defs -Wl,-z,relro \
-  `../fltk/build/fltk-config --ldflags --use-images | sed 's/-lpng//g; s/-lz//g; s/-lfltk_images/-lfltk_images -lfltk_png -lfltk_z/'`
+  `../fltk/build/fltk-config --ldflags --use-images | sed 's/-ljpeg//g; s/-lpng//g; s/-lz//g; s/-lfltk_images/-lfltk_images -lfltk_jpeg -lfltk_png -lfltk_z/'`
 
 strip --strip-all launcher
