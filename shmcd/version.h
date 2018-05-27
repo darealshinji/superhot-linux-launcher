@@ -1,1 +1,0 @@
-#define SHMCD_VERSION "ALPHA 2.0.1m"

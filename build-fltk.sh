@@ -19,12 +19,12 @@ rm -rf fltk/build
 mkdir -p fltk/build
 cd fltk/build
 
-cmake .. -DCMAKE_BUILD_TYPE="None" \
+cmake .. -DCMAKE_BUILD_TYPE="Release" \
   -DCMAKE_INSTALL_PREFIX="$curdir/fltk/build/usr" \
   -DCMAKE_CXX_FLAGS="-std=c++11 $buildflags" \
   -DCMAKE_C_FLAGS="$buildflags" \
   -DOPTION_USE_GL="OFF" \
-  -DOPTION_OPTIM="" \
+  -DOPTION_OPTIM="-O3" \
   -DOPTION_USE_SYSTEM_LIBJPEG="OFF" \
   -DOPTION_USE_SYSTEM_LIBPNG="OFF" \
   -DOPTION_USE_SYSTEM_ZLIB="OFF"

@@ -47,7 +47,7 @@
 #include "common.cpp"
 #include "background.h"
 #include "images.h"
-#include "version.h"
+#include "version.h"  /* #define SHMCD_VERSION "ALPHA ..." */
 
 class mouse_over_button : public Fl_Button
 {
