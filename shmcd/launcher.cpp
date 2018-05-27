@@ -47,7 +47,11 @@
 #include "common.cpp"
 #include "background.h"
 #include "images.h"
-#include "version.h"  /* #define SHMCD_VERSION "ALPHA ..." */
+
+#ifndef SHMCD_VERSION
+#define SHMCD_VERSION "ALPHA           "
+#endif
+
 
 class mouse_over_button : public Fl_Button
 {
@@ -238,8 +242,8 @@ int main(void)
     const char *twitter_url  = "https://twitter.com/share?url=http://superhot___mind_control_delete.trbt.it/launcher/twitter&text=About%20to%20play%20%23MINDCONTROLDELETE!%20So%20excited!&via=superhotthegame";
     const char *reddit_url   = "https://www.reddit.com/r/superhot/";
     const char *feedback_url = "https://docs.google.com/forms/d/e/1FAIpQLSdOdCozSWAi9MXoovLgjIW-IP9DsALlQjrKBdSFXIAI7saYPQ/viewform";
-    const char *discord_url  = "https://discordapp.com/invite/NJKgwvx";
-    const char *twitch_url   = "https://www.twitch.tv/superhotthegame";
+    const char *discord_url  = "https://discord.gg/h7bBaCu";
+    const char *twitch_url   = "https://www.twitch.tv/superhotteam/";
     const char *caffeine_url = "https://www.caffeine.tv/superhotthegame/profile";
 
     URL_BUTTON(760, 439, facebook)

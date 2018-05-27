@@ -2,3 +2,5 @@
 */launcher
 */launcher.o
 */launcher.prefs
+shmcd/background.h
+shmcd/launcher-*.*.*
