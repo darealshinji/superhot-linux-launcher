@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# sudo apt-get install libx11-dev libxft-dev libxext-dev cmake
+# sudo apt-get install libx11-dev libxft-dev libxext-dev libxinerama-dev cmake
 
 set -e
 set -x

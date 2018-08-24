@@ -303,6 +303,14 @@ int main(void)
   if (launch_game) {
     prefs.flush();
     std::string s = exedir + "/SHMCD.x86_64";
+
+    std::cout << "\n\"" << s << "\""
+      << " -adapter " << val_screen
+      << " -screen-fullscreen " << val_fullscreen
+      << " -screen-width " << resolutions[val_res][0]
+      << " -screen-height " << resolutions[val_res][1]
+      << "\n" << std::endl;
+
     execl(s.c_str(), s.c_str(),
           "-adapter", itostr(val_screen).c_str(),
           "-screen-fullscreen", itostr(val_fullscreen).c_str(),
