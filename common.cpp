@@ -176,3 +176,28 @@ bool get_paths(std::string &exe, std::string &exedir)
   return true;
 }
 
+int get_screen_count(void)
+{
+  Display *dp = XOpenDisplay(NULL);
+  XineramaScreenInfo *xsi = NULL;
+  int event_base, error_base, n;
+
+  if (XineramaQueryExtension(dp, &event_base, &error_base)) {
+    xsi = XineramaQueryScreens(dp, &n);
+  } else {
+    //n = Fl::screen_count();
+    n = XScreenCount(dp);
+  }
+
+  if (n < 1) {
+    n = 1;
+  }
+
+  if (xsi) {
+    XFree(xsi);
+  }
+  XCloseDisplay(dp);
+
+  return n;
+}
+

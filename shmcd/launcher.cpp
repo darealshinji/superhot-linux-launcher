@@ -33,7 +33,6 @@
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/fl_draw.H>
 #include <FL/filename.H>
-#include <FL/x.H>
 
 #include <iostream>
 #include <sstream>
@@ -43,6 +42,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/Xinerama.h>
 
 #include "background.h"
 #include "images.h"
@@ -145,7 +146,7 @@ int main(void)
   }
 
   /* get configurations */
-  int screens_avail = Fl::screen_count();
+  int screens_avail = get_screen_count();
   int val_res, val_screen, val_fullscreen;
   Fl_Preferences prefs(exedir.c_str(), "SUPERHOT team", exe.c_str());
 
