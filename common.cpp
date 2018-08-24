@@ -23,49 +23,6 @@
  */
 
 #define LABELSIZE 13
-#define MAX_SCREENS 16
-#define RES_COUNT 21
-
-#define PNG(x) \
-  Fl_PNG_Image image_##x(NULL, x##_png, (int)x##_png_len);
-
-#define GETPREFS(entry, value, default, max) \
-  prefs.get(entry, value, -1); \
-  if (value < 0 || value > max) { value = default; }
-
-#define BUTTON(X,Y,W,H,CB_A,CB_B,IMG) \
-    { mouse_over_box *o = new mouse_over_box(X, Y, W, H); \
-      o->box(FL_NO_BOX); \
-      o->down_box(FL_NO_BOX); \
-      o->mouse_over_image = &IMG; \
-      o->callback(CB_A, (void *)CB_B); \
-      o->clear_visible_focus(); }
-
-#define MENU_BUTTON(PTR,X,Y,W,H,ITEMS,VAL,CB) \
-  { Fl_Menu_Button *o = PTR = new Fl_Menu_Button(X, Y, W, H); \
-    o->align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT); \
-    o->box(FL_THIN_DOWN_BOX); \
-    o->down_box(FL_THIN_DOWN_BOX); \
-    o->color(FL_WHITE); \
-    o->selection_color(selection_color); \
-    o->menu(ITEMS); \
-    o->value(VAL); \
-    ITEMS[VAL].labelfont_ += FL_BOLD; \
-    std::string s = " " + std::string(o->text()); \
-    o->copy_label(s.c_str()); \
-    o->labelsize(LABELSIZE); \
-    o->clear_visible_focus(); \
-    o->callback(CB); }
-
-#define URL_BUTTON(X,Y,NAME) \
-  { mouse_over_button *o = new mouse_over_button(X, Y, 30, 30); \
-    o->box(FL_NO_BOX); \
-    o->down_box(FL_NO_BOX); \
-    o->image(&image_##NAME##_g); \
-    o->default_image = &image_##NAME##_g; \
-    o->mouse_over_image = &image_##NAME##_w; \
-    o->callback(open_uri_cb, (void *)NAME##_url); \
-    o->clear_visible_focus(); }
 
 class move_box : public Fl_Box
 {
@@ -75,8 +32,6 @@ public:
      event_x(0),
      event_y(0)
   { }
-
-  virtual ~move_box() { }
 
 protected:
   int event_x, event_y;
@@ -100,6 +55,37 @@ public:
     return ret;
   }
 };
+
+class menu_button : public Fl_Menu_Button
+{
+public:
+  menu_button(int X, int Y, int W, int H, const char *L);
+  void auto_label();
+};
+
+menu_button::menu_button(int X, int Y, int W, int H, const char *L=NULL)
+: Fl_Menu_Button(X, Y, W, H, L)
+{
+  align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT);
+  box(FL_THIN_DOWN_BOX);
+  down_box(FL_THIN_DOWN_BOX);
+  color(FL_WHITE);
+  selection_color(fl_rgb_color(234, 67, 51));
+  labelsize(LABELSIZE);
+  clear_visible_focus();
+}
+
+void menu_button::auto_label(void)
+{
+  const char *l = this->text();
+  if (l) {
+    char ch[strlen(l) + 1];
+    ch[0] = ' ';
+    ch[1] = 0;
+    strcat(ch, l);
+    copy_label(ch);
+  }
+}
 
 Fl_Double_Window *win;
 bool windowed = false;
@@ -127,8 +113,9 @@ std::string resolutions[][2] = {
   { "1768",  "992" },
   { "1920", "1080" }
 };
+#define RES_COUNT 21
 
-std::string itostr(int i) {
+inline std::string itostr(int i) {
   std::stringstream ss;
   ss << i;
   return ss.str();
@@ -136,39 +123,37 @@ std::string itostr(int i) {
 
 void open_uri_cb(Fl_Widget *, void *v) {
   char errmsg[512];
-  if (!fl_open_uri((const char *)v, errmsg, sizeof(errmsg))) {
+  if (!fl_open_uri(reinterpret_cast<char *>(v), errmsg, sizeof(errmsg))) {
     fl_message_title("Failed to open URL");
     fl_message("%s", errmsg);
   }
 }
 
-void selection_callback(int *prev, Fl_Menu_Button *b, Fl_Menu_Item *it)
+void selection_callback(int *prev, menu_button *b, Fl_Menu_Item *it)
 {
   if (*prev != b->value()) {
-    std::string s = " " + std::string(b->text());
-    b->copy_label(s.c_str());
+    b->auto_label();
     it[b->value()].labelfont_ += FL_BOLD;
     it[*prev].labelfont_ -= FL_BOLD;
     *prev = b->value();
   }
 }
 
-void checkbutton_cb(Fl_Widget *o, void *v)
+void checkbutton_cb(Fl_Widget *o)
 {
-  Fl_Image *img = (Fl_Image *)v;
-  Fl_Button *b = (Fl_Button *)o;
+  Fl_Button *b = dynamic_cast<Fl_Button *>(o);
 
   if (windowed) {
     windowed = false;
-    b->image(0);
+    b->image(NULL);
   } else {
     windowed = true;
-    b->image(img);
+    b->image(&image_check);
   }
-  win->redraw();
+  b->parent()->redraw();
 }
 
-int get_paths(std::string &exe, std::string &exedir)
+bool get_paths(std::string &exe, std::string &exedir)
 {
   char *rp = realpath("/proc/self/exe", NULL);
   int errsv = errno;
@@ -178,7 +163,7 @@ int get_paths(std::string &exe, std::string &exedir)
     copy = strdup(rp);
     if (!(bn = basename(rp)) || !(dn = dirname(copy))) {
       std::cerr << "Error: basename() and/or dirname() has returned NULL" << std::endl;
-      return 1;
+      return false;
     }
     exe = std::string(bn);
     exedir = std::string(dn);
@@ -186,22 +171,8 @@ int get_paths(std::string &exe, std::string &exedir)
     free(copy);
   } else {
     std::cerr << "Error: realpath() -> /proc/self/exe: " << strerror(errsv) << std::endl;
-    return 1;
+    return false;
   }
-  return 0;
-}
-
-int get_screen_count(void)
-{
-  Display *dp = XOpenDisplay(":0.0");
-  int n = ScreenCount(dp);
-  XCloseDisplay(dp);
-
-  if (n < 1) {
-    n = 1;
-  } else if (n > MAX_SCREENS) {
-    n = MAX_SCREENS;
-  }
-  return n;
+  return true;
 }
 

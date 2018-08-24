@@ -43,38 +43,45 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "common.cpp"
 #include "images.h"
+#include "common.cpp"
 
-class mouse_over_box : public Fl_Button
+class mover_button : public Fl_Button
 {
+private:
+  Fl_Image *mover_image_;
+
 public:
-  mouse_over_box(int X, int Y, int W, int H, const char *L=0)
-   : Fl_Button(X, Y, W, H, L),
-     mouse_over_image(0)
-  { }
+  void mover_image(Fl_Image *img) { mover_image_ = img; }
 
-  virtual ~mouse_over_box() { }
-
-  Fl_Image *mouse_over_image;
+  mover_button(int X, int Y, int W, int H, const char *L);
 
   int handle(int event) {
     int ret = Fl_Button::handle(event);
     switch (event) {
       case FL_ENTER:
         fl_cursor(FL_CURSOR_HAND);
-        image(mouse_over_image);
+        image(mover_image_);
         parent()->redraw();
         break;
       case FL_LEAVE:
         fl_cursor(FL_CURSOR_DEFAULT);
-        image(0);
+        image(NULL);
         parent()->redraw();
         break;
     }
     return ret;
   }
 };
+
+mover_button::mover_button(int X, int Y, int W, int H, const char *L=NULL)
+: Fl_Button(X, Y, W, H, L),
+  mover_image_(NULL)
+{
+  box(FL_NO_BOX);
+  down_box(FL_NO_BOX);
+  clear_visible_focus();
+}
 
 enum {
   EN = 0,
@@ -97,9 +104,9 @@ std::string languages[MAX_LANG][2] = {
 };
 
 Fl_Menu_Item resolution_items[RES_COUNT + 1];
-Fl_Menu_Item screen_items[MAX_SCREENS];
 Fl_Menu_Item language_items[MAX_LANG + 1];
-Fl_Menu_Button *resolution_selection, *screen_selection, *language_selection;
+Fl_Menu_Item *screen_items = NULL;
+menu_button *resolution_selection, *screen_selection, *language_selection;
 int prev_selection_res, prev_selection_screen, prev_selection_lang;
 bool launch_game = false;
 
@@ -123,23 +130,23 @@ int default_lang(void)
   return EN;
 }
 
-void resolution_selection_cb(Fl_Widget *, void *) {
+void resolution_selection_cb(Fl_Widget *) {
   selection_callback(&prev_selection_res, resolution_selection, resolution_items);
 }
 
-void screen_selection_cb(Fl_Widget *, void *) {
+void screen_selection_cb(Fl_Widget *) {
   selection_callback(&prev_selection_screen, screen_selection, screen_items);
 }
 
-void language_selection_cb(Fl_Widget *, void *) {
+void language_selection_cb(Fl_Widget *) {
   selection_callback(&prev_selection_lang, language_selection, language_items);
 }
 
-void close_cb(Fl_Widget *, void *) {
+void close_cb(Fl_Widget *) {
   win->hide();
 }
 
-void start_cb(Fl_Widget *, void *) {
+void start_cb(Fl_Widget *) {
   launch_game = true;
   win->hide();
 }
@@ -151,40 +158,45 @@ int main(void)
 
   /* get exe full path */
   std::string exe, exedir;
-  if (get_paths(exe, exedir) == 1) {
+  if (!get_paths(exe, exedir)) {
     return 1;
   }
 
-  /* get number of screens */
-  int screens_avail = get_screen_count();
-
   /* get configurations */
+  int screens_avail = Fl::screen_count();
   int val_res, val_fullscreen, val_lang, val_screen;
   Fl_Preferences prefs(exedir.c_str(), "SUPERHOT team", exe.c_str());
-  GETPREFS("resolution", val_res, RES_COUNT - 1, RES_COUNT - 1);
-  GETPREFS("fullscreen", val_fullscreen, 1, 1);
-  GETPREFS("language", val_lang, default_lang(), MAX_LANG);
-  GETPREFS("screen", val_screen, 0, screens_avail - 1);
+
+  prefs.get("resolution", val_res, -1);
+  prefs.get("fullscreen", val_fullscreen, -1);
+  prefs.get("language", val_lang, -1);
+  prefs.get("screen", val_screen, -1);
+  if (val_res < 0 || val_res > RES_COUNT - 1) { val_res = RES_COUNT - 1; }
+  if (val_fullscreen < 0 || val_fullscreen > 1) { val_fullscreen = 1; }
+  if (val_lang < 0 || val_lang > MAX_LANG) { val_lang = default_lang(); }
+  if (val_screen < 0 || val_screen > screens_avail - 1) { val_screen = 0; }
+
   windowed = (val_fullscreen == 1) ? false : true;
   prev_selection_res = val_res;
   prev_selection_screen = val_screen;
   prev_selection_lang = val_lang;
 
   /* create menu entries */
-  std::string screens_text[MAX_SCREENS], res_text[RES_COUNT];
-  for (int i = 0; i < MAX_SCREENS; i++) {
-    if (i < screens_avail) {
-      screens_text[i] = "Screen " + itostr(i + 1);
-      screen_items[i] = { screens_text[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
-    } else {
-      screen_items[i] = { 0,0,0,0,0,0,0,0,0 };
-    }
+  std::string screens_text[screens_avail], res_text[RES_COUNT];
+  screen_items = new Fl_Menu_Item[screens_avail + 1];
+
+  for (int i = 0; i < screens_avail; i++) {
+    screens_text[i] = "Screen " + itostr(i + 1);
+    screen_items[i] = { screens_text[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
+  screen_items[screens_avail] = { 0,0,0,0,0,0,0,0,0 };
+
   for (int i = 0; i < RES_COUNT; i++) {
     res_text[i] = resolutions[i][0] + "x" + resolutions[i][1];
     resolution_items[i] = { res_text[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
   resolution_items[RES_COUNT] = { 0,0,0,0,0,0,0,0,0 };
+
   for (int i = 0; i < MAX_LANG; i++) {
     language_items[i] = { languages[i][0].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
@@ -194,18 +206,22 @@ int main(void)
   setenv("LC_ALL", "ja_JP", 1);
 
   /* create window */
-  Fl_Color selection_color = fl_rgb_color(234, 67, 51);
   Fl_Double_Window::default_icon(&image_icon_128);
-  Fl::background(0,0,0);
+  Fl::background(0, 0, 0);
 
-  win = new Fl_Double_Window(400, 600, "SUPERHOT: MIND CONTROL DELETE");
+  win = new Fl_Double_Window(400, 600, "SUPERHOT");
   {
-    { move_box *o = new move_box(0,0, 400, 600);
+    { move_box *o = new move_box(0, 0, win->w(), win->h());
       o->align(FL_ALIGN_INSIDE);
       o->image(&image_window); }
 
     /* resolution */
-    MENU_BUTTON(resolution_selection, 80, 186, 245, 26, resolution_items, val_res, resolution_selection_cb)
+    { menu_button *o = resolution_selection = new menu_button(80, 186, 245, 26);
+      o->menu(resolution_items);
+      o->value(val_res);
+      resolution_items[val_res].labelfont_ += FL_BOLD;
+      o->auto_label();
+      o->callback(resolution_selection_cb); }
 
     /* windowed */
     { Fl_Button *o = new Fl_Button(80, 219, 92, 18);
@@ -214,26 +230,47 @@ int main(void)
       if (windowed) {
         o->image(&image_check);
       } else {
-        o->image(0);
+        o->image(NULL);
       }
       o->clear_visible_focus();
-      o->callback(checkbutton_cb, &image_check); }
+      o->callback(checkbutton_cb); }
 
     /* screen */
-    MENU_BUTTON(screen_selection, 80, 278, 245, 26, screen_items, val_screen, screen_selection_cb)
+    { menu_button *o = screen_selection = new menu_button(80, 278, 245, 26);
+      o->menu(screen_items);
+      o->value(val_screen);
+      screen_items[val_screen].labelfont_ += FL_BOLD;
+      o->auto_label();
+      o->callback(screen_selection_cb); }
 
     /* language */
-    MENU_BUTTON(language_selection, 80, 344, 245, 26, language_items, val_lang, language_selection_cb)
+    { menu_button *o = language_selection = new menu_button(80, 344, 245, 26);
+      o->menu(language_items);
+      o->value(val_lang);
+      language_items[val_lang].labelfont_ += FL_BOLD;
+      o->auto_label();
+      o->callback(language_selection_cb); }
 
-    const char *facebook_url = "https://www.facebook.com/dialog/feed?app_id=891295770968742&link=http%3A%2F%2Fsuperhotgame.com&redirect_uri=http%3A%2F%2Fsuperhotgame.com&caption=About%20to%20play%20%23SUPERHOT!%20So%20excited!&display=popup";
+    const char *facebook_url = "https://www.facebook.com/dialog/feed?app_id=891295770968742&link=http%3A%2F%2Fsuperhotgame.com&redirect_uri=https://superhotgame.com&caption=About%20to%20play%20%23SUPERHOT!%20So%20excited!&display=popup";
     const char *twitter_url  = "https://twitter.com/intent/tweet?text=About%20to%20play%20%23SUPERHOT%21%20So%20excited%21&via=superhotthegame&url=http%3A%2F%2Fsuperhotgame.com&original_referer=";
 
-    BUTTON(372, 7, 21, 21, close_cb, NULL, image_close)
-    BUTTON(76, 410, 254, 51, start_cb, &launch_game, image_start)
-    BUTTON(130, 490, 30, 31, open_uri_cb, facebook_url, image_facebook)
-    BUTTON(240, 490, 30, 31, open_uri_cb, twitter_url, image_twitter)
+    { mover_button *o = new mover_button(372, 7, 21, 21);
+      o->mover_image(&image_close);
+      o->callback(close_cb); }
+
+    { mover_button *o = new mover_button(76, 410, 254, 51);
+      o->mover_image(&image_start);
+      o->callback(start_cb); }
+
+    { mover_button *o = new mover_button(130, 490, 30, 31);
+      o->mover_image(&image_facebook);
+      o->callback(open_uri_cb, reinterpret_cast<void *>(const_cast<char *>(facebook_url))); }
+
+    { mover_button *o = new mover_button(240, 490, 30, 31);
+      o->mover_image(&image_twitter);
+      o->callback(open_uri_cb, reinterpret_cast<void *>(const_cast<char *>(twitter_url))); }
   }
-  win->position((Fl::w() - 400) / 2, (Fl::h() - 600) / 2);
+  win->position((Fl::w() - win->w()) / 2, (Fl::h() - win->h()) / 2);
   win->end();
   win->show();
   win->border(0);
@@ -251,6 +288,8 @@ int main(void)
   prefs.set("language", val_lang);
   prefs.set("screen", val_screen);
 
+  delete[] screen_items;
+
   if (launch_game) {
     prefs.flush();
     std::string s = exedir + "/SUPERHOT.x86_64";
@@ -260,7 +299,7 @@ int main(void)
           "-screen-width", resolutions[val_res][0].c_str(),
           "-screen-height", resolutions[val_res][1].c_str(),
           "-language", languages[val_lang][1].c_str(),
-          (char *)0);
+          NULL);
     _exit(127);
   }
   return 0;

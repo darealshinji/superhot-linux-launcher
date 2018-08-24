@@ -6,7 +6,7 @@ test -d ../fltk/build/usr/include || ../build-fltk.sh
 rm -f images.h
 for f in *.png; do
   xxd -i $f >> images.h
-  echo "PNG(${f%.png})" >> images.h
+  echo "Fl_PNG_Image image_${f%.png}(NULL, ${f%.png}_png, ${f%.png}_png_len);" >> images.h
 done
 
 fltk_version="$(echo `cat ../fltk/VERSION`)"
