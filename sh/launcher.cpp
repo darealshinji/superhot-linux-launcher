@@ -89,19 +89,19 @@ enum {
   MAX_LANG = 12
 };
 
-std::string languages[MAX_LANG][2] = {
-  { "English", "EN" },
-  { "Polski", "PL" },
+const char *languages[][2] = {
+  { "English",  "EN" },
+  { "Polski",   "PL" },
   { "Français", "FR" },
-  { "Deutsch", "DE" },
-  { "Русский", "RU" },
+  { "Deutsch",  "DE" },
+  { "Русский",  "RU" },
   { "Portuguêse do Brasil", "PL" },
   { "Italiano", "IT" },
-  { "Čeština", "CZ" },
-  { "Magyar", "HU" },
-  { "Español", "SP" },
-  { "Slovak", "SK" },
-  { "日本語", "JA" }
+  { "Čeština",  "CZ" },
+  { "Magyar",   "HU" },
+  { "Español",  "SP" },
+  { "Slovak",   "SK" },
+  { "日本語",    "JA" }
 };
 
 Fl_Menu_Item resolution_items[RES_COUNT + 1];
@@ -124,7 +124,7 @@ int default_lang(void)
   }
 
   for (int i = 0; i < MAX_LANG; i++) {
-    if (strncasecmp(l, languages[i][1].c_str(), 2) == 0) {
+    if (strncasecmp(l, languages[i][1], 2) == 0) {
       return i;
     }
   }
@@ -193,18 +193,17 @@ int main(void)
   screen_items[screens_avail] = { 0,0,0,0,0,0,0,0,0 };
 
   for (int i = 0; i < RES_COUNT; i++) {
-    res_text[i] = resolutions[i][0] + "x" + resolutions[i][1];
+    res_text[i].append(resolutions[i][0]);
+    res_text[i].push_back('x');
+    res_text[i].append(resolutions[i][1]);
     resolution_items[i] = { res_text[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
   resolution_items[RES_COUNT] = { 0,0,0,0,0,0,0,0,0 };
 
   for (int i = 0; i < MAX_LANG; i++) {
-    language_items[i] = { languages[i][0].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
+    language_items[i] = { languages[i][0], 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
   language_items[MAX_LANG] = { 0,0,0,0,0,0,0,0,0 };
-
-  /* display the Japanese language entry correctly */
-  setenv("LC_ALL", "ja_JP", 1);
 
   /* create window */
   Fl_Double_Window::default_icon(&image_icon_128);
@@ -306,9 +305,9 @@ int main(void)
     execl(s.c_str(), s.c_str(),
           "-adapter", itostr(val_screen).c_str(),
           "-screen-fullscreen", itostr(val_fullscreen).c_str(),
-          "-screen-width", resolutions[val_res][0].c_str(),
-          "-screen-height", resolutions[val_res][1].c_str(),
-          "-language", languages[val_lang][1].c_str(),
+          "-screen-width", resolutions[val_res][0],
+          "-screen-height", resolutions[val_res][1],
+          "-language", languages[val_lang][1],
           NULL);
     _exit(127);
   }

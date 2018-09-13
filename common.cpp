@@ -79,18 +79,19 @@ void menu_button::auto_label(void)
 {
   const char *l = this->text();
   if (l) {
-    char ch[strlen(l) + 1];
+    char *ch = new char[strlen(l) + 1];
     ch[0] = ' ';
     ch[1] = 0;
     strcat(ch, l);
     copy_label(ch);
+    delete ch;
   }
 }
 
 Fl_Double_Window *win;
 bool windowed = false;
 
-std::string resolutions[][2] = {
+const char *resolutions[][2] = {
   {  "640",  "480" },
   {  "720",  "480" },
   {  "720",  "576" },

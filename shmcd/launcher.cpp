@@ -174,7 +174,9 @@ int main(void)
   screen_items[screens_avail] = { 0,0,0,0,0,0,0,0,0 };
 
   for (int i = 0; i < RES_COUNT; i++) {
-    res_text[i] = resolutions[i][0] + "x" + resolutions[i][1];
+    res_text[i].append(resolutions[i][0]);
+    res_text[i].push_back('x');
+    res_text[i].append(resolutions[i][1]);
     resolution_items[i] = { res_text[i].c_str(), 0,0,0,0, FL_NORMAL_LABEL, 0, LABELSIZE, 0 };
   }
   resolution_items[RES_COUNT] = { 0,0,0,0,0,0,0,0,0 };
@@ -314,8 +316,8 @@ int main(void)
     execl(s.c_str(), s.c_str(),
           "-adapter", itostr(val_screen).c_str(),
           "-screen-fullscreen", itostr(val_fullscreen).c_str(),
-          "-screen-width", resolutions[val_res][0].c_str(),
-          "-screen-height", resolutions[val_res][1].c_str(),
+          "-screen-width", resolutions[val_res][0],
+          "-screen-height", resolutions[val_res][1],
           NULL);
     _exit(127);
   }
