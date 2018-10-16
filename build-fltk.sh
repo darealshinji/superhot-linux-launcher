@@ -8,7 +8,7 @@ set -x
 cd "${0%/*}"
 
 curdir="$PWD"
-buildflags="-O3 -fstack-protector -ffunction-sections -fdata-sections -D_FORTIFY_SOURCE=2"
+buildflags="-O3 -fstack-protector-strong -ffunction-sections -fdata-sections -D_FORTIFY_SOURCE=2"
 
 if [ ! -f fltk/CMakeLists.txt ]; then
   git submodule init

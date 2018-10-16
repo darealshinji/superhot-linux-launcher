@@ -37,23 +37,7 @@ protected:
   int event_x, event_y;
 
 public:
-  int handle(int event) {
-    int ret = Fl_Box::handle(event);
-    switch (event) {
-      case FL_PUSH:
-        fl_cursor(FL_CURSOR_MOVE);
-        event_x = Fl::event_x();
-        event_y = Fl::event_y();
-        return 1;
-      case FL_DRAG:
-        window()->position(Fl::event_x_root() - event_x, Fl::event_y_root() - event_y);
-        break;
-      case FL_RELEASE:
-        fl_cursor(FL_CURSOR_DEFAULT);
-        break;
-    }
-    return ret;
-  }
+  int handle(int event);
 };
 
 class menu_button : public Fl_Menu_Button
@@ -62,6 +46,25 @@ public:
   menu_button(int X, int Y, int W, int H, const char *L);
   void auto_label();
 };
+
+int move_box::handle(int event)
+{
+  int ret = Fl_Box::handle(event);
+  switch (event) {
+    case FL_PUSH:
+      fl_cursor(FL_CURSOR_MOVE);
+      event_x = Fl::event_x();
+      event_y = Fl::event_y();
+      return 1;
+    case FL_DRAG:
+      window()->position(Fl::event_x_root() - event_x, Fl::event_y_root() - event_y);
+      break;
+    case FL_RELEASE:
+      fl_cursor(FL_CURSOR_DEFAULT);
+      break;
+  }
+  return ret;
+}
 
 menu_button::menu_button(int X, int Y, int W, int H, const char *L=NULL)
 : Fl_Menu_Button(X, Y, W, H, L)
@@ -116,7 +119,7 @@ const char *resolutions[][2] = {
 };
 #define RES_COUNT 21
 
-inline std::string itostr(int i) {
+std::string itostr(int i) {
   std::stringstream ss;
   ss << i;
   return ss.str();
@@ -179,26 +182,11 @@ bool get_paths(std::string &exe, std::string &exedir)
 
 int get_screen_count(void)
 {
-  Display *dp = XOpenDisplay(NULL);
-  XineramaScreenInfo *xsi = NULL;
-  int event_base, error_base, n;
-
-  if (XineramaQueryExtension(dp, &event_base, &error_base)) {
-    xsi = XineramaQueryScreens(dp, &n);
-  } else {
-    //n = Fl::screen_count();
-    n = XScreenCount(dp);
-  }
+  int n = Fl::screen_count();
 
   if (n < 1) {
-    n = 1;
+    return 1;
   }
-
-  if (xsi) {
-    XFree(xsi);
-  }
-  XCloseDisplay(dp);
-
   return n;
 }
 
