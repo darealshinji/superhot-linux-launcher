@@ -48,7 +48,7 @@
 #include "common.cpp"
 
 #ifndef SHMCD_VERSION
-#define SHMCD_VERSION "ALPHA           "
+#define SHMCD_VERSION "BETA            "
 #endif
 
 
