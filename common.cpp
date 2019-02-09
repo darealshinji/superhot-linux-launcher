@@ -26,15 +26,17 @@
 
 class move_box : public Fl_Box
 {
+private:
+  int _event_x, _event_y;
+
 public:
   move_box(int X, int Y, int W, int H, const char *L=0)
    : Fl_Box(X, Y, W, H, L),
-     event_x(0),
-     event_y(0)
-  { }
-
-protected:
-  int event_x, event_y;
+     _event_x(0),
+     _event_y(0)
+  {
+    align(FL_ALIGN_INSIDE);
+  }
 
 public:
   int handle(int event);
@@ -42,9 +44,25 @@ public:
 
 class menu_button : public Fl_Menu_Button
 {
+private:
+  int _prev;
+  Fl_Menu_Item *_menu;
+
+  void prev(int v) { _prev = v; }
+  int prev() { return _prev; }
+  void update_labels();
+
 public:
-  menu_button(int X, int Y, int W, int H, const char *L);
-  void auto_label();
+  menu_button(int X, int Y, int W, int H);
+
+  void menu(const Fl_Menu_Item *m);
+  Fl_Menu_Item *menu() { return _menu; }
+
+  int handle(int e) {
+    int ret = Fl_Menu_Button::handle(e);
+    update_labels();
+    return ret;
+  }
 };
 
 int move_box::handle(int event)
@@ -53,11 +71,11 @@ int move_box::handle(int event)
   switch (event) {
     case FL_PUSH:
       fl_cursor(FL_CURSOR_MOVE);
-      event_x = Fl::event_x();
-      event_y = Fl::event_y();
+      _event_x = Fl::event_x();
+      _event_y = Fl::event_y();
       return 1;
     case FL_DRAG:
-      window()->position(Fl::event_x_root() - event_x, Fl::event_y_root() - event_y);
+      window()->position(Fl::event_x_root() - _event_x, Fl::event_y_root() - _event_y);
       break;
     case FL_RELEASE:
       fl_cursor(FL_CURSOR_DEFAULT);
@@ -66,8 +84,9 @@ int move_box::handle(int event)
   return ret;
 }
 
-menu_button::menu_button(int X, int Y, int W, int H, const char *L=NULL)
-: Fl_Menu_Button(X, Y, W, H, L)
+menu_button::menu_button(int X, int Y, int W, int H)
+: Fl_Menu_Button(X, Y, W, H),
+  _prev(0)
 {
   align(FL_ALIGN_INSIDE|FL_ALIGN_LEFT);
   box(FL_THIN_DOWN_BOX);
@@ -78,9 +97,22 @@ menu_button::menu_button(int X, int Y, int W, int H, const char *L=NULL)
   clear_visible_focus();
 }
 
-void menu_button::auto_label(void)
+void menu_button::menu(const Fl_Menu_Item *m)
 {
-  const char *l = this->text();
+  Fl_Menu_Button::copy(m);
+  _menu = const_cast<Fl_Menu_Item *>(Fl_Menu_Button::menu());
+}
+
+void menu_button::update_labels(void)
+{
+  Fl_Menu_Item *m = _menu;
+  if (!m) {
+    return;
+  }
+
+  int v = value();
+
+  const char *l = m[v].text;
   if (l) {
     char *ch = new char[strlen(l) + 1];
     ch[0] = ' ';
@@ -89,6 +121,10 @@ void menu_button::auto_label(void)
     copy_label(ch);
     delete ch;
   }
+
+  m[prev()].labelfont_ = labelfont();
+  m[v].labelfont_ = labelfont() | FL_BOLD;
+  prev(v);
 }
 
 Fl_Double_Window *win;
@@ -130,16 +166,6 @@ void open_uri_cb(Fl_Widget *, void *v) {
   if (!fl_open_uri(reinterpret_cast<char *>(v), errmsg, sizeof(errmsg))) {
     fl_message_title("Failed to open URL");
     fl_message("%s", errmsg);
-  }
-}
-
-void selection_callback(int *prev, menu_button *b, Fl_Menu_Item *it)
-{
-  if (*prev != b->value()) {
-    b->auto_label();
-    it[b->value()].labelfont_ += FL_BOLD;
-    it[*prev].labelfont_ -= FL_BOLD;
-    *prev = b->value();
   }
 }
 

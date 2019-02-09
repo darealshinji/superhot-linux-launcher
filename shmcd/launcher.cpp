@@ -109,31 +109,23 @@ mover_button::mover_button(int X, int Y, int W, int H, const char *L)
   clear_visible_focus();
 }
 
-Fl_Menu_Item resolution_items[RES_COUNT + 1];
-Fl_Menu_Item *screen_items = NULL;
-menu_button *resolution_selection, *screen_selection;
-int prev_selection_res, prev_selection_screen;
-bool launch_game = false;
-
-void resolution_selection_cb(Fl_Widget *) {
-  selection_callback(&prev_selection_res, resolution_selection, resolution_items);
-}
-
-void screen_selection_cb(Fl_Widget *) {
-  selection_callback(&prev_selection_screen, screen_selection, screen_items);
-}
-
-void close_cb(Fl_Widget *) {
+static void close_cb(Fl_Widget *) {
   win->hide();
 }
 
-void start_cb(Fl_Widget *) {
-  launch_game = true;
+static void start_cb(Fl_Widget *, void *v) {
+  bool *b = reinterpret_cast<bool *>(v);
+  *b = true;
   win->hide();
 }
 
 int main(void)
 {
+  Fl_Menu_Item resolution_items[RES_COUNT + 1];
+  Fl_Menu_Item *screen_items = NULL;
+  menu_button *resolution_selection, *screen_selection;
+  bool launch_game = false;
+
   /* satisfying section 4 of the FLTK license's LGPL exception */
   std::cout << "using FLTK version " PRINT_VERSION " (http://www.fltk.org)" << std::endl;
 
@@ -156,8 +148,6 @@ int main(void)
   if (val_screen < 0 || val_screen > screens_avail - 1) { val_screen = 0; }
 
   windowed = (val_fullscreen == 1) ? false : true;
-  prev_selection_res = val_res;
-  prev_selection_screen = val_screen;
 
   /* create menu entries */
   std::string screens_text[screens_avail], res_text[RES_COUNT];
@@ -204,10 +194,7 @@ int main(void)
       o->labelsize(LABELSIZE); }
     { menu_button *o = resolution_selection = new menu_button(728, 138, 249, 26);
       o->menu(resolution_items);
-      o->value(val_res);
-      resolution_items[val_res].labelfont_ += FL_BOLD;
-      o->auto_label();
-      o->callback(resolution_selection_cb); }
+      o->value(val_res); }
 
     /* windowed */
     { Fl_Box *o = new Fl_Box(728, 171, 18, 18, " WINDOWED");
@@ -219,11 +206,7 @@ int main(void)
     { Fl_Button *o = new Fl_Button(728, 171, 104, 18);
       o->box(FL_NO_BOX);
       o->down_box(FL_NO_BOX);
-      if (windowed) {
-        o->image(&image_check);
-      } else {
-        o->image(NULL);
-      }
+      o->image(windowed ? &image_check : NULL);
       o->clear_visible_focus();
       o->callback(checkbutton_cb); }
 
@@ -234,10 +217,7 @@ int main(void)
       o->labelsize(LABELSIZE); }
     { menu_button *o = screen_selection = new menu_button(728, 245, 249, 26);
       o->menu(screen_items);
-      o->value(val_screen);
-      screen_items[val_screen].labelfont_ += FL_BOLD;
-      o->auto_label();
-      o->callback(screen_selection_cb); }
+      o->value(val_screen); }
 
     /* start game */
     { mover_button *o = new mover_button(728, 287, 249, 51, "START GAME");
@@ -247,7 +227,7 @@ int main(void)
       o->down_color(fl_rgb_color(93, 0, 0));
       o->default_color(o->color());
       o->mover_color(o->down_color());
-      o->callback(start_cb); }
+      o->callback(start_cb, reinterpret_cast<void *>(&launch_game)); }
 
     { Fl_Box *o = new Fl_Box(728, 368, 249, 51, "JOIN THE DISCUSSION\n\nAND HELP SHAPE THE GAME");
       o->align(FL_ALIGN_CENTER);

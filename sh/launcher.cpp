@@ -84,7 +84,7 @@ mover_button::mover_button(int X, int Y, int W, int H, const char *L=NULL)
   clear_visible_focus();
 }
 
-const char *languages[MAX_LANG][2] = {
+static const char *languages[MAX_LANG][2] = {
   { "English", "EN" },
   { "Polski", "PL" },  /* Polish */
   { "Fran" "\xC3\xA7" "ais", "FR" },  /* French */
@@ -102,14 +102,7 @@ const char *languages[MAX_LANG][2] = {
   { "\xED\x95\x9C\xEA\xB5\xAD\xEC\x96\xB4\xEC\x9D\x98", "KR" }  /* Korean */
 };
 
-Fl_Menu_Item resolution_items[RES_COUNT + 1];
-Fl_Menu_Item language_items[MAX_LANG + 1];
-Fl_Menu_Item *screen_items = NULL;
-menu_button *resolution_selection, *screen_selection, *language_selection;
-int prev_selection_res, prev_selection_screen, prev_selection_lang;
-bool launch_game = false;
-
-int default_lang(void)
+static int default_lang(void)
 {
   char *l = getenv("LANG");
 
@@ -129,29 +122,24 @@ int default_lang(void)
   return 0;  /* English */
 }
 
-void resolution_selection_cb(Fl_Widget *) {
-  selection_callback(&prev_selection_res, resolution_selection, resolution_items);
-}
-
-void screen_selection_cb(Fl_Widget *) {
-  selection_callback(&prev_selection_screen, screen_selection, screen_items);
-}
-
-void language_selection_cb(Fl_Widget *) {
-  selection_callback(&prev_selection_lang, language_selection, language_items);
-}
-
-void close_cb(Fl_Widget *) {
+static void close_cb(Fl_Widget *) {
   win->hide();
 }
 
-void start_cb(Fl_Widget *) {
-  launch_game = true;
+static void start_cb(Fl_Widget *, void *v) {
+  bool *b = reinterpret_cast<bool *>(v);
+  *b = true;
   win->hide();
 }
 
 int main(void)
 {
+  Fl_Menu_Item resolution_items[RES_COUNT + 1];
+  Fl_Menu_Item language_items[MAX_LANG + 1];
+  Fl_Menu_Item *screen_items = NULL;
+  menu_button *resolution_selection, *screen_selection, *language_selection;
+  bool launch_game = false;
+
   /* satisfying section 4 of the FLTK license's LGPL exception */
   std::cout << "using FLTK version " PRINT_VERSION " (http://www.fltk.org)" << std::endl;
 
@@ -176,9 +164,6 @@ int main(void)
   if (val_screen < 0 || val_screen > screens_avail - 1) { val_screen = 0; }
 
   windowed = (val_fullscreen == 1) ? false : true;
-  prev_selection_res = val_res;
-  prev_selection_screen = val_screen;
-  prev_selection_lang = val_lang;
 
   /* create menu entries */
   std::string screens_text[screens_avail], res_text[RES_COUNT];
@@ -213,52 +198,41 @@ int main(void)
       o->align(FL_ALIGN_INSIDE);
       o->image(&image_window); }
 
+    /* close button */
+    { mover_button *o = new mover_button(372, 7, 21, 21);
+      o->mover_image(&image_close);
+      o->callback(close_cb); }
+
     /* resolution */
     { menu_button *o = resolution_selection = new menu_button(80, 186, 245, 26);
       o->menu(resolution_items);
-      o->value(val_res);
-      resolution_items[val_res].labelfont_ += FL_BOLD;
-      o->auto_label();
-      o->callback(resolution_selection_cb); }
+      o->value(val_res); }
 
     /* windowed */
     { Fl_Button *o = new Fl_Button(80, 219, 92, 18);
       o->box(FL_NO_BOX);
       o->down_box(FL_NO_BOX);
-      if (windowed) {
-        o->image(&image_check);
-      } else {
-        o->image(NULL);
-      }
+      o->image(windowed ? &image_check : NULL);
       o->clear_visible_focus();
       o->callback(checkbutton_cb); }
 
     /* screen */
     { menu_button *o = screen_selection = new menu_button(80, 278, 245, 26);
       o->menu(screen_items);
-      o->value(val_screen);
-      screen_items[val_screen].labelfont_ += FL_BOLD;
-      o->auto_label();
-      o->callback(screen_selection_cb); }
+      o->value(val_screen); }
 
     /* language */
     { menu_button *o = language_selection = new menu_button(80, 344, 245, 26);
       o->menu(language_items);
-      o->value(val_lang);
-      language_items[val_lang].labelfont_ += FL_BOLD;
-      o->auto_label();
-      o->callback(language_selection_cb); }
+      o->value(val_lang); }
 
     const char *facebook_url = "https://www.facebook.com/dialog/feed?app_id=891295770968742&link=http%3A%2F%2Fsuperhotgame.com&redirect_uri=https://superhotgame.com&caption=About%20to%20play%20%23SUPERHOT!%20So%20excited!&display=popup";
     const char *twitter_url  = "https://twitter.com/intent/tweet?text=About%20to%20play%20%23SUPERHOT%21%20So%20excited%21&via=superhotthegame&url=http%3A%2F%2Fsuperhotgame.com&original_referer=";
 
-    { mover_button *o = new mover_button(372, 7, 21, 21);
-      o->mover_image(&image_close);
-      o->callback(close_cb); }
-
+    /* start game */
     { mover_button *o = new mover_button(76, 410, 254, 51);
       o->mover_image(&image_start);
-      o->callback(start_cb); }
+      o->callback(start_cb, reinterpret_cast<void *>(&launch_game)); }
 
     { mover_button *o = new mover_button(130, 490, 30, 31);
       o->mover_image(&image_facebook);
