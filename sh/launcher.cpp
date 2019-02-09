@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018, djcj <djcj@gmx.de>
+ * Copyright (c) 2018-2019, djcj <djcj@gmx.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,11 +41,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/extensions/Xinerama.h>
 
 #include "images.h"
 #include "common.cpp"
+
+#define MAX_LANG 15
 
 class mover_button : public Fl_Button
 {
@@ -84,24 +84,22 @@ mover_button::mover_button(int X, int Y, int W, int H, const char *L=NULL)
   clear_visible_focus();
 }
 
-enum {
-  EN = 0,
-  MAX_LANG = 12
-};
-
-const char *languages[][2] = {
-  { "English",  "EN" },
-  { "Polski",   "PL" },
-  { "Français", "FR" },
-  { "Deutsch",  "DE" },
-  { "Русский",  "RU" },
-  { "Portuguêse do Brasil", "PL" },
-  { "Italiano", "IT" },
-  { "Čeština",  "CZ" },
-  { "Magyar",   "HU" },
-  { "Español",  "SP" },
-  { "Slovak",   "SK" },
-  { "日本語",    "JA" }
+const char *languages[MAX_LANG][2] = {
+  { "English", "EN" },
+  { "Polski", "PL" },  /* Polish */
+  { "Fran" "\xC3\xA7" "ais", "FR" },  /* French */
+  { "Deutsch", "DE" },  /* German */
+  { "\xD0\xA0\xD1\x83\xD1\x81\xD1\x81\xD0\xBA\xD0\xB8\xD0\xB9", "RU" },  /* Russian */
+  { "Portugu" "\xC3\xAA" "se do Brasil", "PT" },  /* Brazilian Portuguese */
+  { "Italiano", "IT" },  /* Italian */
+  { "\xC4\x8C" "e" "\xC5\xA1" "tina", "CZ" },  /* Czech */
+  { "Magyar", "HU" },  /* Hungarian */
+  { "Espa" "\xC3\xB1" "ol", "SP" },  /* Spanish */
+  { "Slovak", "SK" },  /* Slovakian */
+  { "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E", "JA" },  /* Japanese */
+  { "\xE7\xB0\xA1\xE9\xAB\x94\xE4\xB8\xAD\xE6\x96\x87", "ZHS" },  /* simplified Chinese */
+  { "\xE7\xB9\x81\xE9\xAB\x94\xE4\xB8\xAD\xE6\x96\x87", "ZHT" },  /* traditional Chinese */
+  { "\xED\x95\x9C\xEA\xB5\xAD\xEC\x96\xB4\xEC\x9D\x98", "KR" }  /* Korean */
 };
 
 Fl_Menu_Item resolution_items[RES_COUNT + 1];
@@ -120,7 +118,7 @@ int default_lang(void)
   }
 
   if (!l || strlen(l) < 2) {
-    return EN;
+    return 0;  /* English */
   }
 
   for (int i = 0; i < MAX_LANG; i++) {
@@ -128,7 +126,7 @@ int default_lang(void)
       return i;
     }
   }
-  return EN;
+  return 0;  /* English */
 }
 
 void resolution_selection_cb(Fl_Widget *) {
