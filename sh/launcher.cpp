@@ -195,7 +195,6 @@ int main(void)
   win = new Fl_Double_Window(400, 600, "SUPERHOT");
   {
     { move_box *o = new move_box(0, 0, win->w(), win->h());
-      o->align(FL_ALIGN_INSIDE);
       o->image(&image_window); }
 
     /* close button */

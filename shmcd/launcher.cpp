@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018, djcj <djcj@gmx.de>
+ * Copyright (c) 2018-2019, djcj <djcj@gmx.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -176,11 +176,10 @@ int main(void)
   win = new Fl_Double_Window(1020, 560, "SUPERHOT: MIND CONTROL DELETE");
   {
     { move_box *o = new move_box(0, 0, win->w(), win->h());
-      o->align(FL_ALIGN_INSIDE);
       o->image(new Fl_JPEG_Image(NULL, shmcd_background_jpg)); }
 
     /* close button */
-    { mover_button *o = new mover_button(957, 10, 24, 24, "×");
+    { mover_button *o = new mover_button(957, 10, 24, 24, "\xC3\x97" /*×*/);
       o->labelfont(FL_HELVETICA_BOLD);
       o->labelcolor(fl_rgb_color(180));
       o->default_labelcolor(o->labelcolor());
