@@ -12,7 +12,15 @@ buildflags="-O3 -fstack-protector-strong -ffunction-sections -fdata-sections -D_
 
 rm -rf fltk/build
 mkdir -p fltk/build
-cd fltk/build
+cd fltk
+
+ver=$(cat VERSION)
+if [ ! -f VERSION_GITHASH ]; then
+  git rev-parse --short HEAD > VERSION_GITHASH
+fi
+echo "$ver git$(cat VERSION_GITHASH)" > ../VERSION
+
+cd build
 
 # w/o Pango
 cmake .. -DCMAKE_BUILD_TYPE="Release" \
@@ -31,10 +39,10 @@ cmake .. -DCMAKE_BUILD_TYPE="Release" \
 make -j4
 make install
 
-cd "$curdir"
-rm -rf fltk/build-pango
-mkdir -p fltk/build-pango
-cd fltk/build-pango
+cd ..
+rm -rf build-pango
+mkdir -p build-pango
+cd build-pango
 
 # Pango
 cmake .. -DCMAKE_BUILD_TYPE="Release" \
@@ -52,11 +60,6 @@ cmake .. -DCMAKE_BUILD_TYPE="Release" \
   -DOPTION_USE_SYSTEM_ZLIB="OFF"
 make -j4
 make install
-
-cd ..
-
-ver=$(cat VERSION)
-echo "$ver git$(git rev-parse --short HEAD)" > ../VERSION
 
 cd "$curdir"
 
