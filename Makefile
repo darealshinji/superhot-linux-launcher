@@ -7,4 +7,9 @@ clean:
 
 distclean: clean
 	rm -rf fltk/build/
+	rm -rf fltk/build-pango/
+	rm -f VERSION
+
+maintainer-clean: distclean
+	rm -rf fltk
 

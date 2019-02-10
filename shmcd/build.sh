@@ -6,6 +6,9 @@ cd "${0%/*}"
 
 xxd -i shmcd_background.jpg > background.h
 
+# no Pango
+build="build"
+
 . ../build.inc
 
 str="BETA            "
