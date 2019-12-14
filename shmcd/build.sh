@@ -25,7 +25,7 @@ for ver in 1.0.0 2.0.1m 3.0.1m 4.0.0m 4.0.12m 5.0.0m 5.0.1m ; do
   fi
 done
 
-for ver in 1.0.0 ; do
+for ver in 1.0.0 2.0.0 3.0.0 4.0.0 ; do
   str2="BETA $ver"
   strlen2=$(printf "$str2" | wc -c)
   append=$(($strlen - $strlen2))
